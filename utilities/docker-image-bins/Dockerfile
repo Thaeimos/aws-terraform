@@ -35,5 +35,9 @@ RUN unzip awscliv2.zip
 RUN ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
 
 # AWS login - Copy secrets from secret and untracked folder
+COPY secrets/login.secrets /tmp/
+RUN mkdir ~/.aws
+RUN sed -n '2,4p' /tmp/login.secrets > ~/.aws/credentials
+RUN sed -n '7,9p' /tmp/login.secrets > ~/.aws/config
 
 ENTRYPOINT ["/bin/bash"]
