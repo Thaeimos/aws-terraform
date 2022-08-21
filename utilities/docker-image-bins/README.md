@@ -1,6 +1,7 @@
 # Description
 
-Docker image with a lot of binaries and tools needed for the development of the project
+Docker image with a lot of binaries and tools needed for the development of the project.
+This docker image assumes you've put your AWS credentials and preferences in the "secrets/login.secrets" file.
 
 
 # Make this work
