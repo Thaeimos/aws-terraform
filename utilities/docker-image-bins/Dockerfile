@@ -33,6 +33,8 @@ RUN echo 'complete -C /usr/bin/terraform terraform' >> /root/.bashrc
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 RUN unzip awscliv2.zip
 RUN ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
+# Auto-complete
+RUN echo 'complete -C "/usr/local/bin/aws_completer" aws ' >> ~/.bashrc
 
 # AWS login - Copy secrets from secret and untracked folder
 COPY secrets/login.secrets /tmp/
