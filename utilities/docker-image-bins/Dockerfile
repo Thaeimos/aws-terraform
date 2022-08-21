@@ -1,8 +1,8 @@
 FROM ubuntu:22.04
 
-# AWS CLI
+# Common packages
 RUN apt-get update
-RUN apt-get install -y apt-transport-https ca-certificates curl gnupg apt-utils python3 awscli
+RUN apt-get install -y apt-transport-https ca-certificates curl gnupg apt-utils python3 
 
 # Kubectl
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kubectl
@@ -29,6 +29,11 @@ RUN unzip terraform_1.1.7_linux_$(dpkg --print-architecture).zip
 RUN mv terraform /usr/local/bin/
 RUN echo 'complete -C /usr/bin/terraform terraform' >> /root/.bashrc
 
-# AWS init at login
+# Install AWS CLI
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip
+RUN ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
+
+# AWS login - Copy secrets from secret and untracked folder
 
 ENTRYPOINT ["/bin/bash"]
