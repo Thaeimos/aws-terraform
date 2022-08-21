@@ -30,6 +30,7 @@ RUN mv terraform /usr/local/bin/
 RUN echo 'complete -C /usr/bin/terraform terraform' >> /root/.bashrc
 
 # Install AWS CLI
+RUN apt-get install -y less groff glibc-source
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 RUN unzip awscliv2.zip
 RUN ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
@@ -41,5 +42,6 @@ COPY secrets/login.secrets /tmp/
 RUN mkdir ~/.aws
 RUN sed -n '2,4p' /tmp/login.secrets > ~/.aws/credentials
 RUN sed -n '7,9p' /tmp/login.secrets > ~/.aws/config
+RUN rm /tmp/login.secrets
 
 ENTRYPOINT ["/bin/bash"]
