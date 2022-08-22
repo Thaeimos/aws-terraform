@@ -1,7 +1,3 @@
-# --------------------------------------------------------------------------------
-# REQUIRED PARAMETERS
-# These parameters must be passed.
-# --------------------------------------------------------------------------------
 variable "env" {
   description = "Name of the environment. Example: prod"
   type        = string
