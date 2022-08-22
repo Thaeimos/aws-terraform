@@ -1,7 +1,8 @@
 module "dev-tfstate" {
-  source = "../../../modules/terraform-state/"
-  env = "dev"
-  s3_bucket = "com.example.dev.terraform-asdasd"
-  s3_bucket_name = "Dev Terraform State Store"
-  dynamodb_table = "terraform_dev"
+  source                  = "../../../modules/terraform-state/"
+  env                     = var.env
+  s3_bucket               = var.s3_bucket
+  s3_bucket_name          = var.s3_bucket_name
+  dynamodb_table          = var.dynamodb_table
+  bucket_sse_algorithm    = var.bucket_sse_algorithm
 }
