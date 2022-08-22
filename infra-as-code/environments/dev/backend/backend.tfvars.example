@@ -1,5 +1,5 @@
-bucket               = "terraform-backend-ASDASDASDAS"
-key                  = "terraform.tfstate"
-dynamodb_table       = "terraform_state_lock"
-region               = "eu-west-2"
-encrypt              = true
+env                     = "dev"
+s3_bucket               = "com.example.dev.terraform-asdasd"
+s3_bucket_name          = "Dev Terraform State Store"
+dynamodb_table          = "terraform_dvdqw"
+bucket_sse_algorithm    = "AES256"
