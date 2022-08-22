@@ -1,5 +1,0 @@
-bucket               = "terraform-backend-ASDASDASDAS"
-key                  = "terraform.tfstate"
-dynamodb_table       = "terraform_state_lock"
-region               = "eu-west-2"
-encrypt              = true
