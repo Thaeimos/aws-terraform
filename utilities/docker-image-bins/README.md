@@ -13,3 +13,11 @@ docker run -it aws-cli:v0
 cd ~/aws-terraform
 docker run --mount type=bind,source="$(pwd)",target=/home/aws-terra -w /home/aws-terra -p 8080:8080 --name aws-docker-bins --rm -it aws-cli:v0
 ```
+
+# Test all is OK
+```bash
+aws ec2 describe-hosts
+{
+    "Hosts": []
+}
+```
