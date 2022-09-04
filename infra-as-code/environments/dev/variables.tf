@@ -3,6 +3,11 @@ variable "region" {
   type        = string
 }
 
+variable "zone" {
+  description = "The zone to deploy the resources"
+  type        = string
+}
+
 variable "server_port" {
   description = "The port where the HTTP server listens for requests"
   type        = string
