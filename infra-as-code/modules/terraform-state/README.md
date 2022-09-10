@@ -1,31 +1,31 @@
 # terraform-state
 
 Terraform module to create the S3/DynamoDB backend to store the Terraform state and lock.
-The state created by this tf should be stored in source control.
+It will automatically create an .auto.tfvars file so you can use it later in your environment
 
 ## Usage
 
-Configure your AWS credentials.
+Start up the [utilities](../../../utilities/docker-image-bins/) docker image (which has already a section to properly configure your secrets), create an environment and then fill up the details needed by the module:
 
-    $ brew install awscli
-    $ aws configure
+```bash
+module "dev-tfstate" {
+  source               = "../../../modules/terraform-state/"
+  env                  = var.env
+  s3_bucket            = var.s3_bucket
+  s3_bucket_name       = var.s3_bucket_name
+  dynamodb_table       = var.dynamodb_table
+  bucket_sse_algorithm = var.bucket_sse_algorithm
+}
+```
 
-Initialize the AWS provider with your preferred region.
+We favour the usage of ".tfvars" files and it's reflected in the examples.
 
-    provider "aws" {
-      region  = "us-west-2"
-      version = "~> 0.1"
-    }
+After you are done with this, issue the following command:
 
-Add the tfstate store resource.
+```bash
+terraform init -backend-config=backend.conf.secret
+```
 
-    module "dev-tfstate" {
-      source = "github.com/confluentinc/terraform-state"
-      env = "dev"
-      s3_bucket = "com.example.dev.terraform"
-      s3_bucket_name = "Dev Terraform State Store"
-      dynamodb_table = "terraform_dev"
-    }
 
 This should be used in a dedicated terraform workspace or environment. The
 resulting `terraform.tfstate` should be stored in source control. As long as
