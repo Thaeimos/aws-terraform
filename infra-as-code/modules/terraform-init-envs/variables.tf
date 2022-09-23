@@ -1,9 +1,10 @@
-variable "env" {
-  description = "Name of the environment. Example: prod"
+variable "environment" {
+  description = "Single environment."
   type        = string
+  nullable    = false
 }
 
-variable "s3_bucket" {
+variable "s3_bucket_prefix" {
   description = "S3 bucket for terraform state."
   type        = string
 }
@@ -22,4 +23,10 @@ variable "bucket_sse_algorithm" {
   type        = string
   description = "Encryption algorithm to use on the S3 bucket. Currently only AES256 is supported"
   default     = "AES256"
+}
+
+variable "region" {
+  type        = string
+  description = "Currently mono region. Region where to deploy."
+  default     = "eu-west-2"
 }

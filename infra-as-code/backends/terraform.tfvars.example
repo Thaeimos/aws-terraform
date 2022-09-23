@@ -1,0 +1,5 @@
+environments         = ["dev","test","prod"]
+s3_bucket_prefix     = "com.example"
+s3_bucket_name       = "Dev Terraform State Store"
+dynamodb_table       = "terraform_dev"
+bucket_sse_algorithm = "AES256"

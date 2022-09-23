@@ -1,9 +1,10 @@
-variable "env" {
-  description = "Name of the environment. Example: prod"
-  type        = string
+variable "environments" {
+  description = "List of environments."
+  type        = list
+  nullable    = false
 }
 
-variable "s3_bucket" {
+variable "s3_bucket_prefix" {
   description = "S3 bucket for terraform state."
   type        = string
 }
