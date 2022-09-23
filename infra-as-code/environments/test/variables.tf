@@ -10,3 +10,8 @@ variable "name" {
   default     = "sre-challenge"
 }
 
+variable "read_only_users" {
+  type        = list
+  description = "List of users to create with read only access."
+  default     = ["test-01","test-02"]
+}
