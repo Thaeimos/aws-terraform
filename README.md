@@ -89,6 +89,7 @@ Give credit here.
 - This project was inspired on the [Backend module for Terraform](https://github.com/DNXLabs/terraform-aws-backend).
 - We used as a base this [medium article](https://medium.com/swlh/creating-an-aws-ecs-cluster-of-ec2-instances-with-terraform-85a10b5cfbe3).
 - The inspiration for the spot instances [comes from here](https://github.com/aws-samples/ecs-refarch-mixed-mode/blob/master/README.md).
+- For the user creation we used [this Stackoverflow](https://stackoverflow.com/questions/49353521/terraform-provisioned-iam-user-created-with-iam-console-access-disabled) post.
 
 
 
