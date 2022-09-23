@@ -76,8 +76,13 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - A diagram with the implementation is required.
 - Create directory structure for single region.
 - Escalate that to multi region.
-
-
+- Multi cloud usando módulos
+- Security
+- Ec2s con un wrapper de go sobre C
+- Logging solution from ground up
+- Monitoring solution from ground up
+- Big query security by row
+- Nginx lua
 
 ## Acknowledgements
 Give credit here.
