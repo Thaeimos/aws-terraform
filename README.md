@@ -41,6 +41,8 @@ List the ready features here:
 - Docker utility with all the commands and tools needed
     - Use user's defined service account if present. Otherwise resort to default service account.
 - IAM read-only users. Use this [link to connect](https://incode-test.signin.aws.amazon.com/console) to the account with the credentials provided. The code is in this [separated terraform file](/infra-as-code/environments/test/users.tf).
+- ECS with EC2
+    - Dynamic AMI as you can see [here](/infra-as-code/environments/test/main.tf#L133)
 - Documentation
 
 
@@ -69,7 +71,7 @@ Project is: _Getting started_.
 Include areas you believe need improvement / could be improved. Also add TODOs for future development.
 
 - Generate a VPC (VPC01) with public and private subnets, and the required subnets elements (Route tables, Internet gateways, NAT or instance gateways, etc).
-- Dynamic AMI
+
 - Provision an application using ECS with EC2 and Fargate with the following elements: public component, private component, database component and all the required elements (security groups, roles, log groups, etc). The components must we interconnected, so for example the public layer must connect to the application layer and the application layer must connect to the database layer. A load balancer with target and auto-scalation groups must be utilized for each layer.
 - For the database layer, use an AWS managed service.
 - Expose the application to Internet using a load balancer of the type you consider the best for this kind of implementation. No need to assign a domain name or TLS certificates, but explanation of what is required to do it will be necessary.
@@ -84,12 +86,17 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - Monitoring solution from ground up
 - Big query security by row
 - Nginx lua
-- Blue/Green deployments
+- Blue/Green deployments - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-blue-green.html ?
 - Test then prod
 - Github pipelines
-- Module pinning
+- Module pinning - Perhaps using https://github.com/philips-software/terraform-aws-ecs/tree/2.2.0 ?
 - Generate MFA for read only users.
 - Encrypt password for read only users.
+- Use spot instances for EC2 ECS.
+- Pin the AMI for ECS and provide information.
+- SSL
+    - Create certificates and attach them
+    - Redirect http to https
 
 
 ## Acknowledgements
