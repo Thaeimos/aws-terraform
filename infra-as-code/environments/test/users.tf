@@ -30,3 +30,15 @@ resource "aws_iam_user_login_profile" "user_login" {
   user                    = "${aws_iam_user.user[each.key].name}"
   password_reset_required = true
 }
+
+# Set password policy for the whole account
+resource "aws_iam_account_password_policy" "medium" {  
+minimum_password_length        = 10  
+require_uppercase_characters   = true  
+require_lowercase_characters   = true  
+require_numbers                = true  
+require_symbols                = false  
+allow_users_to_change_password = true
+max_password_age               = 90  
+password_reuse_prevention      = 3
+}
