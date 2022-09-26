@@ -40,6 +40,7 @@ List the ready features here:
 - Monorepo
 - Docker utility with all the commands and tools needed
     - Use user's defined service account if present. Otherwise resort to default service account.
+- IAM read-only users. Use this [link to connect](https://incode-test.signin.aws.amazon.com/console) to the account with the credentials provided. The code is in this [separated terraform file](/infra-as-code/environments/test/users.tf).
 - Documentation
 
 
@@ -67,7 +68,8 @@ Project is: _Getting started_.
 ## Room for Improvement
 Include areas you believe need improvement / could be improved. Also add TODOs for future development.
 
-- Generate temporal IAM read-only users
+- Generate MFA for read only users.
+- Encrypt password for read only users.
 - Generate a VPC (VPC01) with public and private subnets, and the required subnets elements (Route tables, Internet gateways, NAT or instance gateways, etc).
 - Provision an application using ECS with EC2 and Fargate with the following elements: public component, private component, database component and all the required elements (security groups, roles, log groups, etc). The components must we interconnected, so for example the public layer must connect to the application layer and the application layer must connect to the database layer. A load balancer with target and auto-scalation groups must be utilized for each layer.
 - For the database layer, use an AWS managed service.
