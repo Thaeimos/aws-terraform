@@ -180,6 +180,61 @@ resource "aws_security_group" "presentation_tier" {
   }
 }
 
+# Endpoint and Load Balancer
+resource "aws_lb" "front_end" {
+  name               = "${var.name}-front-end-lb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb_presentation_tier.id]
+  subnets            = values(aws_subnet.pub_subnet)[*].id
+
+  enable_deletion_protection = false
+}
+
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = aws_lb.front_end.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.front_end.arn
+  }
+}
+
+resource "aws_lb_target_group" "front_end" {
+  name     = "front-end-lb-tg"
+  port     = 3000
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.vpc.id
+}
+
+# Autoscaling group
+resource "aws_launch_configuration" "ecs_launch_config" {
+  name_prefix           = "${var.name}-"
+  image_id              = data.aws_ami.ecs_ami.id
+  iam_instance_profile  = aws_iam_instance_profile.ecs_agent.name
+  security_groups       = [aws_security_group.presentation_tier.id]
+  user_data             = file("user-data.sh")
+  instance_type         = "t2.micro"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_group" "public_ecs_asg" {
+  name                      = "asg"
+  vpc_zone_identifier       = values(aws_subnet.pub_subnet)[*].id
+  launch_configuration      = aws_launch_configuration.ecs_launch_config.name
+
+  desired_capacity          = 3
+  min_size                  = 1
+  max_size                  = 10
+  health_check_grace_period = 300
+  health_check_type         = "EC2"
+}
+
 # IAM for ECS
 data "aws_iam_policy_document" "ecs_agent" {
   statement {
@@ -224,32 +279,7 @@ data "aws_ami" "ecs_ami" {
   }
 }
 
-# Autoscaling group
-resource "aws_launch_configuration" "ecs_launch_config" {
-  name_prefix           = "${var.name}-"
-  image_id              = data.aws_ami.ecs_ami.id
-  iam_instance_profile  = aws_iam_instance_profile.ecs_agent.name
-  security_groups       = [aws_security_group.presentation_tier.id]
-  user_data             = file("user-data.sh")
-  instance_type         = "t2.micro"
 
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_autoscaling_group" "public_ecs_asg" {
-  for_each                  = {for idx, az_name in local.az_names: idx => az_name}
-  name                      = "asg"
-  vpc_zone_identifier       = [aws_subnet.pub_subnet[each.key].id]
-  launch_configuration      = aws_launch_configuration.ecs_launch_config.name
-
-  desired_capacity          = 2
-  min_size                  = 1
-  max_size                  = 10
-  health_check_grace_period = 300
-  health_check_type         = "EC2"
-}
 
 # # Database
 # resource "aws_db_subnet_group" "db_subnet_group" {
