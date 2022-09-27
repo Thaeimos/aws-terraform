@@ -37,6 +37,13 @@ RUN ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
 # Auto-complete
 RUN echo 'complete -C /usr/local/bin/aws_completer aws ' >> ~/.bashrc
 
+# Install Github CLI
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+RUN chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+RUN apt update
+RUN apt install gh -y
+
 # AWS login - Copy secrets from secret and untracked folder
 COPY secrets/login.secrets /tmp/
 RUN mkdir ~/.aws
