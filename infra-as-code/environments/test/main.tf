@@ -24,7 +24,7 @@ provider "aws" {
 
 # VPC
 resource "aws_vpc" "vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.main_cidr_block
   enable_dns_support   = true
   enable_dns_hostnames = true
 
@@ -33,14 +33,13 @@ resource "aws_vpc" "vpc" {
   }
 }
 
-# Internet gateway and routes
+# Internet gateway and public route
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.vpc.id
-}
 
-resource "aws_subnet" "pub_subnet" {
-  vpc_id                  = aws_vpc.vpc.id
-  cidr_block              = "10.0.1.0/24"
+  tags = {
+    Name = var.name
+  }
 }
 
 resource "aws_route_table" "public" {
@@ -50,10 +49,54 @@ resource "aws_route_table" "public" {
       cidr_block = "0.0.0.0/0"
       gateway_id = aws_internet_gateway.internet_gateway.id
   }
+
+  tags = {
+    Name = "public-route-${var.name}"
+  }
 }
 
+# Dynamic AZs and subnets
+data "aws_availability_zones" "azs" {
+  state = "available"
+}
+
+locals {
+  az_names = data.aws_availability_zones.azs.names
+}
+
+resource "aws_subnet" "pub_subnet" {
+  for_each                = {for idx, az_name in local.az_names: idx => az_name}
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = cidrsubnet(var.main_cidr_block, 8, each.key)
+  availability_zone       = local.az_names[each.key]
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "public_subnet_${local.az_names[each.key]}"
+  }
+}
+
+resource "aws_subnet" "priv_subnet" {
+  for_each                = {for idx, az_name in local.az_names: idx => az_name}
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = cidrsubnet(var.main_cidr_block, 8, each.key + length(local.az_names))
+  availability_zone       = local.az_names[each.key]
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "private_subnet_${local.az_names[each.key]}"
+  }
+}
+
+
+
+
+
+
+
 resource "aws_route_table_association" "route_table_association" {
-  subnet_id      = aws_subnet.pub_subnet.id
+  for_each       = {for idx, az_name in local.az_names: idx => az_name}
+  subnet_id      = aws_subnet.pub_subnet[each.key].id
   route_table_id = aws_route_table.public.id
 }
 
@@ -132,13 +175,23 @@ resource "aws_iam_instance_profile" "ecs_agent" {
 
 # Dynamic AMI
 data "aws_ami" "ecs_ami" {
+  most_recent   = true
+  owners        = ["amazon"]
 
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-ecs*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 }
 
 # Autoscaling group
-### DECIDE WHAT TO DO WITH AMI
 resource "aws_launch_configuration" "ecs_launch_config" {
-  image_id             = "ami-094d4d00fd7462815"
+  image_id             = data.aws_ami.ecs_ami.id
   iam_instance_profile = aws_iam_instance_profile.ecs_agent.name
   security_groups      = [aws_security_group.ecs_sg.id]
   user_data            = "#!/bin/bash\necho ECS_CLUSTER=my-cluster >> /etc/ecs/ecs.config"
@@ -146,8 +199,9 @@ resource "aws_launch_configuration" "ecs_launch_config" {
 }
 
 resource "aws_autoscaling_group" "failure_analysis_ecs_asg" {
+  for_each                  = {for idx, az_name in local.az_names: idx => az_name}
   name                      = "asg"
-  vpc_zone_identifier       = [aws_subnet.pub_subnet.id]
+  vpc_zone_identifier       = [aws_subnet.pub_subnet[each.key].id]
   launch_configuration      = aws_launch_configuration.ecs_launch_config.name
 
   desired_capacity          = 2
@@ -159,29 +213,31 @@ resource "aws_autoscaling_group" "failure_analysis_ecs_asg" {
 
 # Database
 resource "aws_db_subnet_group" "db_subnet_group" {
-    subnet_ids  = [aws_subnet.pub_subnet.id]
+  for_each    = {for idx, az_name in local.az_names: idx => az_name}
+  subnet_ids  = [aws_subnet.pub_subnet[each.key].id]
 }
-### REMOVE PASSWORDS
-resource "aws_db_instance" "mysql" {
-  identifier                = "mysql"
-  allocated_storage         = 5
-  backup_retention_period   = 2
-  backup_window             = "01:00-01:30"
-  maintenance_window        = "sun:03:00-sun:03:30"
-  multi_az                  = true
-  engine                    = "mysql"
-  engine_version            = "5.7"
-  instance_class            = "db.t2.micro"
-  db_name                   = "worker_db"
-  username                  = "worker"
-  password                  = "worker"
-  port                      = "3306"
-  db_subnet_group_name      = aws_db_subnet_group.db_subnet_group.id
-  vpc_security_group_ids    = [aws_security_group.rds_sg.id, aws_security_group.ecs_sg.id]
-  skip_final_snapshot       = true
-  final_snapshot_identifier = "worker-final"
-  publicly_accessible       = true
-}
+
+# ### REMOVE PASSWORDS
+# resource "aws_db_instance" "mysql" {
+#   identifier                = "mysql"
+#   allocated_storage         = 5
+#   backup_retention_period   = 2
+#   backup_window             = "01:00-01:30"
+#   maintenance_window        = "sun:03:00-sun:03:30"
+#   multi_az                  = true
+#   engine                    = "mysql"
+#   engine_version            = "5.7"
+#   instance_class            = "db.t2.micro"
+#   db_name                   = "worker_db"
+#   username                  = "worker"
+#   password                  = "worker"
+#   port                      = "3306"
+#   db_subnet_group_name      = aws_db_subnet_group.db_subnet_group.id
+#   vpc_security_group_ids    = [aws_security_group.rds_sg.id, aws_security_group.ecs_sg.id]
+#   skip_final_snapshot       = true
+#   final_snapshot_identifier = "worker-final"
+#   publicly_accessible       = true
+# }
 
 # ECR
 resource "aws_ecr_repository" "worker" {
