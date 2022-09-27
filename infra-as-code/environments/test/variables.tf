@@ -10,6 +10,12 @@ variable "name" {
   default     = "sre-challenge"
 }
 
+variable "environment" {
+  type        = string
+  description = "Environment where we are."
+  default     = "no-environment"
+}
+
 variable "read_only_users" {
   type        = list
   description = "List of users to create with read only access."
