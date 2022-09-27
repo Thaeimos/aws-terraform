@@ -43,6 +43,7 @@ List the ready features here:
 - IAM read-only users. Use this [link to connect](https://incode-test.signin.aws.amazon.com/console) to the account with the credentials provided. The code is in this [separated terraform file](/infra-as-code/environments/test/users.tf).
 - ECS with EC2.
     - Dynamic AMI as you can see [here](/infra-as-code/environments/test/main.tf#L133).
+    - Template substitution for user-data.sh.
 - VPC
     - Name as desired.
     - Dynamic public and private subnets creation based on Availability Zones.
@@ -68,7 +69,7 @@ List the ready features here:
 
 
 ## Project Status
-Project is: _Getting started_.
+Project is: _Actively working_.
 
 
 ## Room for Improvement
@@ -104,6 +105,7 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - Docker proper credentials https://docs.docker.com/engine/reference/commandline/login/#credentials-store
 
 
+
 ## Acknowledgements
 Give credit here.
 - This project was inspired on the [Backend module for Terraform](https://github.com/DNXLabs/terraform-aws-backend).
@@ -111,6 +113,7 @@ Give credit here.
 - The inspiration for the spot instances [comes from here](https://github.com/aws-samples/ecs-refarch-mixed-mode/blob/master/README.md).
 - For the user creation we used [this post](https://blog.gitguardian.com/managing-aws-iam-with-terraform-part-1/).
 - Dynamic subnets creation based on this [Stackoverflow post](https://stackoverflow.com/questions/63309824/for-each-availability-zone-within-an-aws-region/63310014#63310014).
+- We use code for the frontend application based on this [post](https://medium.com/avmconsulting-blog/how-to-deploy-a-dockerised-node-js-application-on-aws-ecs-with-terraform-3e6bceb48785).
 
 
 
