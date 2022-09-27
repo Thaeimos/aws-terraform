@@ -101,6 +101,7 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - SSL
     - Create certificates and attach them
     - Redirect http to https
+- Docker proper credentials https://docs.docker.com/engine/reference/commandline/login/#credentials-store
 
 
 ## Acknowledgements
