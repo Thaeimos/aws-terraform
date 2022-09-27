@@ -20,6 +20,13 @@ terraform {
 
 provider "aws" {
   region  = var.region
+
+  default_tags {
+    tags = {
+      purpose       = var.name
+      environment   = var.environment
+    }
+  }
 }
 
 # VPC
@@ -39,19 +46,6 @@ resource "aws_internet_gateway" "internet_gateway" {
 
   tags = {
     Name = var.name
-  }
-}
-
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.vpc.id
-
-  route {
-      cidr_block = "0.0.0.0/0"
-      gateway_id = aws_internet_gateway.internet_gateway.id
-  }
-
-  tags = {
-    Name = "public-route-${var.name}"
   }
 }
 
@@ -88,11 +82,19 @@ resource "aws_subnet" "priv_subnet" {
   }
 }
 
+# Public routes
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.vpc.id
 
+  route {
+      cidr_block = "0.0.0.0/0"
+      gateway_id = aws_internet_gateway.internet_gateway.id
+  }
 
-
-
-
+  tags = {
+    Name = "public-route-${var.name}"
+  }
+}
 
 resource "aws_route_table_association" "route_table_association" {
   for_each       = {for idx, az_name in local.az_names: idx => az_name}
@@ -101,47 +103,80 @@ resource "aws_route_table_association" "route_table_association" {
 }
 
 # Security groups
-resource "aws_security_group" "ecs_sg" {
+resource "aws_security_group" "alb_presentation_tier" {
+  name        = "allow_connection_to_alb_presentation_tier"
+  description = "Allow HTTP"
   vpc_id      = aws_vpc.vpc.id
 
   ingress {
-      from_port       = 22
-      to_port         = 22
-      protocol        = "tcp"
-      cidr_blocks     = ["0.0.0.0/0"]
+    description      = "HTTP from anywhere"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
-      from_port       = 443
-      to_port         = 443
-      protocol        = "tcp"
-      cidr_blocks     = ["0.0.0.0/0"]
+    description      = "HTTP from anywhere"
+    from_port        = 3000
+    to_port          = 3000
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   egress {
-      from_port       = 0
-      to_port         = 65535
-      protocol        = "tcp"
-      cidr_blocks     = ["0.0.0.0/0"]
+    description     = "Outgoing connections to anywhere"
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "alb_presentation_tier_sg"
   }
 }
 
-resource "aws_security_group" "rds_sg" {
+resource "aws_security_group" "presentation_tier" {
+  name        = "allow_connection_to_presentation_tier"
+  description = "Allow HTTP"
   vpc_id      = aws_vpc.vpc.id
 
   ingress {
-      protocol        = "tcp"
-      from_port       = 3306
-      to_port         = 3306
-      cidr_blocks     = ["0.0.0.0/0"]
-      security_groups = [aws_security_group.ecs_sg.id]
+    description     = "HTTP from anywhere"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_presentation_tier.id]
+  }
+
+  ingress {
+    description     = "HTTP from anywhere"
+    from_port       = 3000
+    to_port         = 3000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_presentation_tier.id]
+  }
+
+  ingress {
+    description     = "SSH from anywhere"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    cidr_blocks     = ["0.0.0.0/0"]
   }
 
   egress {
-      from_port       = 0
-      to_port         = 65535
-      protocol        = "tcp"
-      cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "presentation_tier_sg"
   }
 }
 
@@ -191,14 +226,19 @@ data "aws_ami" "ecs_ami" {
 
 # Autoscaling group
 resource "aws_launch_configuration" "ecs_launch_config" {
-  image_id             = data.aws_ami.ecs_ami.id
-  iam_instance_profile = aws_iam_instance_profile.ecs_agent.name
-  security_groups      = [aws_security_group.ecs_sg.id]
-  user_data            = "#!/bin/bash\necho ECS_CLUSTER=my-cluster >> /etc/ecs/ecs.config"
-  instance_type        = "t2.micro"
+  name_prefix           = "${var.name}-"
+  image_id              = data.aws_ami.ecs_ami.id
+  iam_instance_profile  = aws_iam_instance_profile.ecs_agent.name
+  security_groups       = [aws_security_group.presentation_tier.id]
+  user_data             = file("user-data.sh")
+  instance_type         = "t2.micro"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
-resource "aws_autoscaling_group" "failure_analysis_ecs_asg" {
+resource "aws_autoscaling_group" "public_ecs_asg" {
   for_each                  = {for idx, az_name in local.az_names: idx => az_name}
   name                      = "asg"
   vpc_zone_identifier       = [aws_subnet.pub_subnet[each.key].id]
@@ -211,11 +251,11 @@ resource "aws_autoscaling_group" "failure_analysis_ecs_asg" {
   health_check_type         = "EC2"
 }
 
-# Database
-resource "aws_db_subnet_group" "db_subnet_group" {
-  for_each    = {for idx, az_name in local.az_names: idx => az_name}
-  subnet_ids  = [aws_subnet.pub_subnet[each.key].id]
-}
+# # Database
+# resource "aws_db_subnet_group" "db_subnet_group" {
+#   for_each    = {for idx, az_name in local.az_names: idx => az_name}
+#   subnet_ids  = [aws_subnet.pub_subnet[each.key].id]
+# }
 
 # ### REMOVE PASSWORDS
 # resource "aws_db_instance" "mysql" {
