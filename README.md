@@ -1,6 +1,6 @@
 # aws-terraform
 
-Multicloud setup using Terraform in AWS and GCP
+Terraform AWS demo using ECS
 
 
 ## Table of Contents
@@ -23,7 +23,7 @@ Multicloud setup using Terraform in AWS and GCP
 
 This is for my own practice and trainning.
 
-The idea is to create a scalable web monitor application that feeds information about website availability over a GCP's Pub/Sub instance to be inserted  into an SQL database, yet to be determined.
+The idea is to create a scalable 3 tier web application with a database in the end spawning multiple availability zones in a given region, using ECS as the frontend and application stack.
 
 
 ## Technologies Used
@@ -46,6 +46,7 @@ List the ready features here:
 - VPC
     - Name as desired.
     - Dynamic public and private subnets creation based on Availability Zones.
+    - Variable that tags the environment.
 - Documentation
 
 
