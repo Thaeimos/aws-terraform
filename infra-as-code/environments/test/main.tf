@@ -235,6 +235,7 @@ resource "aws_autoscaling_group" "public_ecs_asg" {
   health_check_type         = "EC2"
 }
 
+# Frontend ECS
 # IAM for ECS
 data "aws_iam_policy_document" "ecs_agent" {
   statement {
@@ -279,61 +280,31 @@ data "aws_ami" "ecs_ami" {
   }
 }
 
-
-
-# # Database
-# resource "aws_db_subnet_group" "db_subnet_group" {
-#   for_each    = {for idx, az_name in local.az_names: idx => az_name}
-#   subnet_ids  = [aws_subnet.pub_subnet[each.key].id]
-# }
-
-# ### REMOVE PASSWORDS
-# resource "aws_db_instance" "mysql" {
-#   identifier                = "mysql"
-#   allocated_storage         = 5
-#   backup_retention_period   = 2
-#   backup_window             = "01:00-01:30"
-#   maintenance_window        = "sun:03:00-sun:03:30"
-#   multi_az                  = true
-#   engine                    = "mysql"
-#   engine_version            = "5.7"
-#   instance_class            = "db.t2.micro"
-#   db_name                   = "worker_db"
-#   username                  = "worker"
-#   password                  = "worker"
-#   port                      = "3306"
-#   db_subnet_group_name      = aws_db_subnet_group.db_subnet_group.id
-#   vpc_security_group_ids    = [aws_security_group.rds_sg.id, aws_security_group.ecs_sg.id]
-#   skip_final_snapshot       = true
-#   final_snapshot_identifier = "worker-final"
-#   publicly_accessible       = true
-# }
-
 # ECR
-resource "aws_ecr_repository" "worker" {
-  name  = "worker"
+resource "aws_ecr_repository" "docker_repo_frontend" {
+  name  = "${var.name}-ecs-frontend"
 }
 
 # ECS
-resource "aws_ecs_cluster" "ecs_cluster" {
-  name  = "my-cluster"
+resource "aws_ecs_cluster" "ecs_cluster_frontend" {
+  name  = "${var.name}-ecs-cluster-frontend"
 }
 
-data "template_file" "task_definition_template" {
-  template = file("task_definition.json.tpl")
-  vars = {
-    REPOSITORY_URL = replace(aws_ecr_repository.worker.repository_url, "https://", "")
-  }
-}
+# data "template_file" "task_definition_template" {
+#   template = file("task_definition.json.tpl")
+#   vars = {
+#     REPOSITORY_URL = replace(aws_ecr_repository.docker_repo_frontend.repository_url, "https://", "")
+#   }
+# }
 
-resource "aws_ecs_task_definition" "task_definition" {
-  family                = "worker"
-  container_definitions = data.template_file.task_definition_template.rendered
-}
+# resource "aws_ecs_task_definition" "task_definition" {
+#   family                = "worker"
+#   container_definitions = data.template_file.task_definition_template.rendered
+# }
 
-resource "aws_ecs_service" "worker" {
-  name            = "worker"
-  cluster         = aws_ecs_cluster.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count   = 2
-}
+# resource "aws_ecs_service" "worker" {
+#   name            = "worker"
+#   cluster         = aws_ecs_cluster.ecs_cluster_frontend.id
+#   task_definition = aws_ecs_task_definition.task_definition.arn
+#   desired_count   = 2
+# }
