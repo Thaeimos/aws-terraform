@@ -215,7 +215,8 @@ resource "aws_launch_configuration" "ecs_launch_config" {
   image_id              = data.aws_ami.ecs_ami.id
   iam_instance_profile  = aws_iam_instance_profile.ecs_agent.name
   security_groups       = [aws_security_group.presentation_tier.id]
-  user_data             = file("user-data.sh")
+  user_data             = templatefile("user-data.sh.tpl", { cluster_name = "${aws_ecs_cluster.ecs_cluster_frontend.name}" })
+
   instance_type         = "t2.micro"
 
   lifecycle {
