@@ -36,13 +36,16 @@ The idea is to create a scalable web monitor application that feeds information 
 
 List the ready features here:
 
-- Infrastructure as code
-- Monorepo
-- Docker utility with all the commands and tools needed
+- Infrastructure as code.
+- Monorepo.
+- Docker utility with all the commands and tools needed.
     - Use user's defined service account if present. Otherwise resort to default service account.
 - IAM read-only users. Use this [link to connect](https://incode-test.signin.aws.amazon.com/console) to the account with the credentials provided. The code is in this [separated terraform file](/infra-as-code/environments/test/users.tf).
-- ECS with EC2
-    - Dynamic AMI as you can see [here](/infra-as-code/environments/test/main.tf#L133)
+- ECS with EC2.
+    - Dynamic AMI as you can see [here](/infra-as-code/environments/test/main.tf#L133).
+- VPC
+    - Name as desired.
+    - Dynamic public and private subnets creation based on Availability Zones.
 - Documentation
 
 
@@ -105,6 +108,7 @@ Give credit here.
 - We used as a base this [medium article](https://medium.com/swlh/creating-an-aws-ecs-cluster-of-ec2-instances-with-terraform-85a10b5cfbe3).
 - The inspiration for the spot instances [comes from here](https://github.com/aws-samples/ecs-refarch-mixed-mode/blob/master/README.md).
 - For the user creation we used [this post](https://blog.gitguardian.com/managing-aws-iam-with-terraform-part-1/).
+- Dynamic subnets creation based on this [Stackoverflow post](https://stackoverflow.com/questions/63309824/for-each-availability-zone-within-an-aws-region/63310014#63310014).
 
 
 
