@@ -28,5 +28,5 @@ variable "main_cidr_block" {
 
 variable "frontend_name" {
   type        = string
-  description = "Name for the application and related infrastructure that supports the frontend."
+  description = "Name for the application and related infrastructure that supports the frontend. This should be set up on the task file for the application."
 }
