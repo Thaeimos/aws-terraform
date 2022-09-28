@@ -11,7 +11,7 @@
               "awslogs-stream-prefix": "ecs"
            }
         },
-        "name": "frontend-application-task",
+        "name": "sre-challenge-ecs-frontend",
         "portMappings": [ 
            { 
               "containerPort": 3000,
