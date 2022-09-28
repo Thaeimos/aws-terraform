@@ -30,9 +30,6 @@
   "cpu": "256",
   "family": "frontend-application-task",
   "memory": "512",
-  "runtimePlatform": {
-       "operatingSystemFamily": "LINUX"
-   },
   "requiresCompatibilities": [ 
       "EC2" 
    ]
