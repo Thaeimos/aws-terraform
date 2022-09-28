@@ -2,16 +2,16 @@
   "containerDefinitions": [ 
      { 
         "essential": true,
-        "image": "790577265452.dkr.ecr.eu-west-2.amazonaws.com/sre-challenge-ecs-frontend:latest",
+        "image": "PLACEHOLDER_URL/PLACEHOLDER_NAME:latest",
         "logConfiguration": { 
            "logDriver": "awslogs",
            "options": { 
-              "awslogs-group" : "/ecs/frontend-application-task",
-              "awslogs-region": "us-west-2",
+              "awslogs-group" : "PLACEHOLDER_NAME",
+              "awslogs-region": "PLACEHOLDER_REGION",
               "awslogs-stream-prefix": "ecs"
            }
         },
-        "name": "sre-challenge-ecs-frontend",
+        "name": "PLACEHOLDER_NAME",
         "portMappings": [ 
            { 
               "containerPort": 3000,
@@ -22,13 +22,13 @@
         "environment": [
           {
               "name": "environment",
-              "value": "TEST"
+              "value": "PLACEHOLDER_ENV"
           }
         ]
      }
   ],
   "cpu": "256",
-  "family": "frontend-application-task",
+  "family": "PLACEHOLDER_NAME",
   "memory": "512",
   "requiresCompatibilities": [ 
       "EC2" 
