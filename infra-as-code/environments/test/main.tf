@@ -291,6 +291,16 @@ resource "aws_ecs_cluster" "ecs_cluster_frontend" {
   name  = var.frontend_name
 }
 
+resource "aws_cloudwatch_log_group" "log_ecs_frontend" {
+  name                = var.frontend_name
+  retention_in_days   = 30
+
+  tags = {
+    Environment = var.environment
+    Application = var.frontend_name
+  }
+}
+
 # data "template_file" "task_definition_template" {
 #   template = file("task_definition.json.tpl")
 #   vars = {
