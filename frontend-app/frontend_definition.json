@@ -2,7 +2,7 @@
   "containerDefinitions": [ 
      { 
         "essential": true,
-        "image": "790577265452.dkr.ecr.eu-west-2.amazonaws.com/frontend-app-ecs-ec2:latest",
+        "image": "790577265452.dkr.ecr.eu-west-2.amazonaws.com/frontend-app-ecs-ec2:latest", 
         "logConfiguration": { 
            "logDriver": "awslogs",
            "options": { 
