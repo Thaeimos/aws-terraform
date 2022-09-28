@@ -33,7 +33,16 @@ jobs:
 
       - name: Print environment variables
         run: |
-          echo ${{ github }}
+          env
+
+      - name: Add environment variables in a dynamic way
+        run: |
+          FOO="ASDF"
+          echo "FOO=${FOO}" >> $GITHUB_ENV
+
+      - name: Print environment variables after insert
+        run: |
+          env
 
       # - name: Configure AWS credentials
       #   uses: aws-actions/configure-aws-credentials@13d241b293754004c80624b5567555c4a39ffbe3
