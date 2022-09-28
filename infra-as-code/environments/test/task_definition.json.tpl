@@ -1,10 +1,20 @@
 [
   {
-    "essential": true,
-    "memory": 512,
-    "name": "worker",
-    "cpu": 2,
+    "name": "frontend-task",
     "image": "${REPOSITORY_URL}:latest",
-    "environment": []
+    "essential": true,
+    "environment": [
+      {
+          "name": "environment",
+          "value": "${ENV_VAR}"
+      }
+    ],
+    "portMappings": [
+      {
+        "containerPort": 3000
+      }
+    ],
+    "memory": 512,
+    "cpu": 256
   }
 ]
