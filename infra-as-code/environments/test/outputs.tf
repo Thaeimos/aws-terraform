@@ -3,7 +3,7 @@
 #   sensitive = true
 # }
 
-output "dns_entry_url" {
+output "MAIN_ENTRY_WEB" {
   value     = "http://${aws_lb.front_end.dns_name}"
 }
 
