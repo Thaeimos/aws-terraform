@@ -1,24 +1,39 @@
 {
-  "containerDefinitions":
-  [
-    {
-      "name": "sre-challenge-ecs-frontend",
-      "image": "${REPOSITORY_URL}:latest",
-      "essential": true,
-      "environment": [
-        {
-            "name": "environment",
-            "value": "${ENV_VAR}"
-        }
-      ],
-      "portMappings": [
-        {
-          "containerPort": 3000
-        }
-      ],
-      "memory": 512,
-      "cpu": 256,
-      "family": "frontend-application"
-    }
-  ]
+  "containerDefinitions": [ 
+     { 
+        "essential": true,
+        "image": "790577265452.dkr.ecr.eu-west-2.amazonaws.com/sre-challenge-ecs-frontend:latest",
+        "logConfiguration": { 
+           "logDriver": "awslogs",
+           "options": { 
+              "awslogs-group" : "/ecs/frontend-application-task",
+              "awslogs-region": "us-west-2",
+              "awslogs-stream-prefix": "ecs"
+           }
+        },
+        "name": "frontend-application-task",
+        "portMappings": [ 
+           { 
+              "containerPort": 3000,
+              "hostPort": 3000,
+              "protocol": "tcp"
+           }
+        ],
+        "environment": [
+          {
+              "name": "environment",
+              "value": "TEST"
+          }
+        ]
+     }
+  ],
+  "cpu": "256",
+  "family": "frontend-application-task",
+  "memory": "512",
+  "runtimePlatform": {
+       "operatingSystemFamily": "LINUX"
+   },
+  "requiresCompatibilities": [ 
+      "EC2" 
+   ]
 }
