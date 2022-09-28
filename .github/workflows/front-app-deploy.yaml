@@ -24,6 +24,10 @@ jobs:
     name: Deploy Frontend to ECS EC2
     runs-on: ubuntu-latest
     environment: production
+    defaults:
+      run:
+        shell: bash
+        working-directory: frontend-app
 
     steps:
       - name: Checkout
