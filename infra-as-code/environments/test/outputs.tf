@@ -7,14 +7,6 @@ output "MAIN_ENTRY_WEB" {
   value     = "http://${aws_lb.front_end.dns_name}"
 }
 
-output "ECR_REPOSITORY_FRONT" {
-  value     = aws_ecr_repository.docker_repo_frontend.name
+output "FRONT_PLACEHOLDER_URL" {
+  value     = aws_ecr_repository.docker_repo_frontend.repository_url
 }
-
-output "ECS_CLUSTER_FRONT" {
-  value     = aws_ecs_cluster.ecs_cluster_frontend.name
-}
-
-# output "ECS_SERVICE_FRONT" {
-#   value     = ""
-# }
