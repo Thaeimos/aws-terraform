@@ -14,9 +14,8 @@ env:
   ECS_CLUSTER: ${{ secrets.ECS_CLUSTER_FRONT }}
 
   ECS_TASK_DEFINITION: "frontend-app/frontend_definition.json"
-  ECS_SERVICE: "frontend-application"                           # set this to your Amazon ECS service name
-  CONTAINER_NAME: "frontend-task"                     # set this to the name of the container in the
-                                                        # containerDefinitions section of your task definition
+  ECS_SERVICE: "frontend-application"              # set this to your Amazon ECS service name
+  CONTAINER_NAME: "sre-challenge-ecs-frontend"     # set this to the name of the container in the containerDefinitions section of your task definition
 
 jobs:
   deploy:

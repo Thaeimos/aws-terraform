@@ -2,7 +2,7 @@
   "containerDefinitions":
   [
     {
-      "name": "my-first-task",
+      "name": "sre-challenge-ecs-frontend",
       "image": "${REPOSITORY_URL}:latest",
       "essential": true,
       "environment": [
