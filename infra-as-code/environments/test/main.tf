@@ -250,7 +250,7 @@ data "aws_iam_policy_document" "ecs_agent" {
 }
 
 resource "aws_iam_role" "ecs_agent" {
-  name               = "ecs-agent"
+  name               = var.frontend_name
   assume_role_policy = data.aws_iam_policy_document.ecs_agent.json
 }
 
@@ -261,7 +261,7 @@ resource "aws_iam_role_policy_attachment" "ecs_agent" {
 }
 
 resource "aws_iam_instance_profile" "ecs_agent" {
-  name = "ecs-agent"
+  name = var.frontend_name
   role = aws_iam_role.ecs_agent.name
 }
 
@@ -283,35 +283,35 @@ data "aws_ami" "ecs_ami" {
 
 # ECR
 resource "aws_ecr_repository" "docker_repo_frontend" {
-  name  = "${var.name}-ecs-frontend"
+  name  = var.frontend_name
 }
 
 # ECS
 resource "aws_ecs_cluster" "ecs_cluster_frontend" {
-  name  = "${var.name}-ecs-cluster-frontend"
+  name  = var.frontend_name
 }
 
-data "template_file" "task_definition_template" {
-  template = file("task_definition.json.tpl")
-  vars = {
-    REPOSITORY_URL = replace(aws_ecr_repository.docker_repo_frontend.repository_url, "https://", "")
-    ENV_VAR = var.environment
+# data "template_file" "task_definition_template" {
+#   template = file("task_definition.json.tpl")
+#   vars = {
+#     REPOSITORY_URL = replace(aws_ecr_repository.docker_repo_frontend.repository_url, "https://", "")
+#     ENV_VAR = var.environment
 
-  }
-}
+#   }
+# }
 
-resource "aws_ecs_task_definition" "task_definition" {
-  family                = "frontend-application"
-  container_definitions = data.template_file.task_definition_template.rendered
-  requires_compatibilities = ["EC2"]
-  # network_mode             = "bridge"
-  # cpu                      = "256"
-  # memory                   = "512"
-}
+# resource "aws_ecs_task_definition" "task_definition" {
+#   family                = var.frontend_name
+#   container_definitions = data.template_file.task_definition_template.rendered
+#   requires_compatibilities = ["EC2"]
+#   # network_mode             = "bridge"
+#   # cpu                      = "256"
+#   # memory                   = "512"
+# }
 
-resource "aws_ecs_service" "frontend_application" {
-  name            = "frontend-application"
-  cluster         = aws_ecs_cluster.ecs_cluster_frontend.id
-  task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count   = 2
-}
+# resource "aws_ecs_service" "frontend_application" {
+#   name            = var.frontend_name
+#   cluster         = aws_ecs_cluster.ecs_cluster_frontend.id
+#   task_definition = aws_ecs_task_definition.task_definition.arn
+#   desired_count   = 2
+# }

@@ -25,3 +25,8 @@ variable "main_cidr_block" {
   type        = string
   description = "CIDR block of IPs for the VPC."
 }
+
+variable "frontend_name" {
+  type        = string
+  description = "Name for the application and related infrastructure that supports the frontend."
+}
