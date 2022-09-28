@@ -13,7 +13,7 @@ env:
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_FRONT }}
   ECS_CLUSTER: ${{ secrets.ECS_CLUSTER_FRONT }}
 
-  ECS_TASK_DEFINITION: "./frontend_definition.json"
+  ECS_TASK_DEFINITION: "frontend-app/frontend_definition.json"
   ECS_SERVICE: "frontend-application"                           # set this to your Amazon ECS service name
   CONTAINER_NAME: "frontend-task"                     # set this to the name of the container in the
                                                         # containerDefinitions section of your task definition
