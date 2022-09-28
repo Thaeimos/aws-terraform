@@ -48,6 +48,9 @@ List the ready features here:
     - Name as desired.
     - Dynamic public and private subnets creation based on Availability Zones.
     - Variable that tags the environment.
+    - Create log partitions for applications
+- Github pipelines to manage applications
+    - Deploy on merge
 - Documentation
 
 
@@ -103,6 +106,9 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
     - Create certificates and attach them
     - Redirect http to https
 - Docker proper credentials https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+- Substitute variables on task definition for AWS workflow
+- Lint and security scan on PR on applications
+- Use environments in GH https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
 
 
 
