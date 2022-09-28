@@ -21,7 +21,7 @@ env:
 
 jobs:
   deploy:
-    name: Deploy
+    name: Deploy Frontend to ECS EC2
     runs-on: ubuntu-latest
     environment: production
 
