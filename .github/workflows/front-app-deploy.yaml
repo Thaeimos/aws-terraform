@@ -29,7 +29,8 @@ jobs:
         run: echo "::set-output name=env::${{ fromJSON('{"main":"production","develop":"development"}')[github.ref_name] }}"
 
       - name: Debug environment selection
-        run: echo "Environment: ${{ needs.setup-stage.outputs.env-name }}"
+        run: |
+          echo "Environment: ${{ needs.setup-stage.outputs.env-name }}"
 
   deploy:
     name: Deploy Frontend to ECS EC2
