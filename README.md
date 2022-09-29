@@ -109,6 +109,7 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - Substitute variables on task definition for AWS workflow
 - Lint and security scan on PR on applications
 - Use environments in GH https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+- Create those using GH API https://stackoverflow.com/questions/70943164/create-environment-for-repository-using-gh
 
 
 
