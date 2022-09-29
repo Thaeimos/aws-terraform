@@ -308,13 +308,17 @@ resource "aws_ecs_service" "frontend_application" {
   name            = var.frontend_name
   cluster         = aws_ecs_cluster.ecs_cluster_frontend.id
   task_definition = aws_ecs_task_definition.front_task_definition.arn
-  desired_count   = 1
+  desired_count   = 5
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.ec2.name
     weight            = 100
     base              = 0
   }
+
+  # lifecycle {
+  #   ignore_changes = [desired_count]
+  # }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.front_end.arn
