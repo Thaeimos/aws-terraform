@@ -23,7 +23,7 @@ Terraform AWS demo using ECS
 
 This is for my own practice and trainning.
 
-The idea is to create a scalable 3 tier web application with a database in the end spawning multiple availability zones in a given region, using ECS as the frontend and application stack.
+The idea is to create a scalable 3 tier web application with a database in the end spawning multiple availability zones in a given region, using ECS-EC2 as the frontend and ECS-Fragate as the application stack.
 
 
 ## Technologies Used
@@ -48,7 +48,14 @@ List the ready features here:
     - Name as desired.
     - Dynamic public and private subnets creation based on Availability Zones.
     - Variable that tags the environment.
-    - Create log partitions for applications
+    - Create log partitions for applications.
+    - Frontend application using ECS (EC2) as a public component with:
+        - Security groups.
+        - Roles.
+        - Cloudwatch log group.
+        - Load balancer.
+        - Auto-scalation group.
+    - External endpoint of type "application" for exposing the 3 tier web stack.
 - Github pipelines to manage applications
     - Deploy on merge
 - Documentation
@@ -82,18 +89,11 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 
 - Provision an application using ECS with EC2 and Fargate with the following elements: public component, private component, database component and all the required elements (security groups, roles, log groups, etc). The components must we interconnected, so for example the public layer must connect to the application layer and the application layer must connect to the database layer. A load balancer with target and auto-scalation groups must be utilized for each layer.
 - For the database layer, use an AWS managed service.
-- Expose the application to Internet using a load balancer of the type you consider the best for this kind of implementation. No need to assign a domain name or TLS certificates, but explanation of what is required to do it will be necessary.
 - Select and add five CloudWatch alarms related to the implementation. We require explanation about the reasons of the selected alarms.
 - A diagram with the implementation is required.
-- Create directory structure for single region.
-- Escalate that to multi region.
-- Multi cloud usando módulos
 - Security
-- Ec2s con un wrapper de go sobre C
 - Logging solution from ground up
 - Monitoring solution from ground up
-- Big query security by row
-- Nginx lua
 - Blue/Green deployments - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-blue-green.html ?
 - Test then prod
 - Github pipelines
@@ -110,6 +110,7 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - Lint and security scan on PR on applications
 - Use environments in GH https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
 - Create those using GH API https://stackoverflow.com/questions/70943164/create-environment-for-repository-using-gh
+- Test ASGs
 
 
 
