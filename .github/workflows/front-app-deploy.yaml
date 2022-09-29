@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: 
       name: ${{needs.setup-stage.outputs.phase}}
-      url: ${{needs.setup-stage.outputs.phase}}
+      url: http://thaeimos.com/${{needs.setup-stage.outputs.phase}}
     defaults:
       run:
         shell: bash
@@ -48,10 +48,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Debug environment selection
-        run: |
-          env 
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1.7.0
