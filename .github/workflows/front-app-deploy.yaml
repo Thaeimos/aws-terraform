@@ -10,8 +10,7 @@ on:
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
-  ECS_CLUSTER: ${{ secrets.ECS_CLUSTER_FRONT }}
-
+  ECS_CLUSTER: "frontend-app-ecs-ec2"
   ECS_TASK_DEFINITION: "frontend-app/frontend_definition.json"
   ECR_REPOSITORY: "frontend-app-ecs-ec2" 
   ECS_SERVICE: "frontend-app-ecs-ec2"               # set this to your Amazon ECS service name
