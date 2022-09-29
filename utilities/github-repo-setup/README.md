@@ -9,7 +9,7 @@ We provide an example of how the file for the secrets should be. Just use the co
 cd utilities/github-repo-setup
 gh auth login
 REPO="Thaeimos/aws-terraform"
-ENVIRON="development"
+ENVIRON="production"
 gh secret set -f secrets/repo.secrets --repo $REPO --env $ENVIRON
 ```
 
