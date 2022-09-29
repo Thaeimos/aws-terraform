@@ -37,7 +37,9 @@ jobs:
     name: Deploy Frontend to ECS EC2
     needs: setup-stage
     runs-on: ubuntu-latest
-    environment: ${{needs.setup-stage.outputs.phase}}
+    environment: 
+      name: ${{needs.setup-stage.outputs.phase}}
+      url: https://github.com/${{needs.setup-stage.outputs.phase}}
     defaults:
       run:
         shell: bash
