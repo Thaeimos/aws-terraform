@@ -17,6 +17,20 @@ env:
   CONTAINER_NAME: "frontend-app-ecs-ec2"            # set this to the name of the container in the containerDefinitions section of your task definition
 
 jobs:
+
+  setup-stage:
+    name: Set environment based on branch
+    outputs:
+      env-name: ${{ steps.env-name.outputs.env }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Environment Name
+        id: env-name
+        run: echo "::set-output name=env::${{ fromJSON('{"main":"production","develop":"development"}')[github.ref_name] }}"
+
+      - name: Debug environment selection
+        run: echo "Environment: ${{ needs.setup-stage.outputs.env-name }}"
+
   deploy:
     name: Deploy Frontend to ECS EC2
     runs-on: ubuntu-latest
