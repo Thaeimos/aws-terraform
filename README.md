@@ -36,8 +36,8 @@ The idea is to create a scalable 3 tier web application with a database in the e
 
 List the ready features here:
 
-- Infrastructure as code.
-- Monorepo.
+- Infrastructure as code. Multiple environments to support different infrastructure choices.
+- Monorepo. We have one folder for each application (Frontend and backend) and one folder for the infrastructure creation.
 - Docker utility with all the commands and tools needed.
     - Use user's defined service account if present. Otherwise resort to default service account.
 - IAM read-only users. Use this [link to connect](https://incode-test.signin.aws.amazon.com/console) to the account with the credentials provided. The code is in this [separated terraform file](/infra-as-code/environments/test/users.tf).
