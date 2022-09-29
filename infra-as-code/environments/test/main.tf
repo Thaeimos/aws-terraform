@@ -12,7 +12,7 @@ terraform {
   }
 }
 
-# The backend config variables come from a backend.auto.tfvars file
+# The backend config variables come from a backend.tfvars file
 terraform {
   backend "s3" {
   }
@@ -28,6 +28,11 @@ provider "aws" {
     }
   }
 }
+
+
+#####################################################################
+# VPC
+#####################################################################
 
 # VPC
 resource "aws_vpc" "vpc" {
@@ -101,6 +106,71 @@ resource "aws_route_table_association" "route_table_association" {
   subnet_id      = aws_subnet.pub_subnet[each.key].id
   route_table_id = aws_route_table.public.id
 }
+
+
+#####################################################################
+# External endpoint
+#####################################################################
+
+# Endpoint and Load Balancer
+resource "aws_lb" "front_end" {
+  name               = "${var.name}-front-end-lb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb_presentation_tier.id]
+  subnets            = values(aws_subnet.pub_subnet)[*].id
+
+  enable_deletion_protection = false
+}
+
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = aws_lb.front_end.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.front_end.arn
+  }
+}
+
+resource "aws_lb_target_group" "front_end" {
+  name     = "front-end-lb-tg"
+  port     = 3000
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.vpc.id
+}
+
+# Autoscaling group
+resource "aws_launch_configuration" "ecs_launch_config" {
+  name_prefix           = "${var.name}-"
+  image_id              = data.aws_ami.ecs_ami.id
+  iam_instance_profile  = aws_iam_instance_profile.ecs_agent_front.name
+  security_groups       = [aws_security_group.presentation_tier.id]
+  user_data             = templatefile("user-data.sh.tpl", { cluster_name = "${aws_ecs_cluster.ecs_cluster_frontend.name}" })
+
+  instance_type         = "t2.micro"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_group" "public_ecs_asg" {
+  name                      = "asg"
+  vpc_zone_identifier       = values(aws_subnet.pub_subnet)[*].id
+  launch_configuration      = aws_launch_configuration.ecs_launch_config.name
+
+  desired_capacity          = 3
+  min_size                  = 1
+  max_size                  = 10
+  health_check_grace_period = 300
+  health_check_type         = "EC2"
+}
+
+#####################################################################
+# Frontend application
+#####################################################################
 
 # Security groups
 resource "aws_security_group" "alb_presentation_tier" {
@@ -180,65 +250,8 @@ resource "aws_security_group" "presentation_tier" {
   }
 }
 
-# Endpoint and Load Balancer
-resource "aws_lb" "front_end" {
-  name               = "${var.name}-front-end-lb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb_presentation_tier.id]
-  subnets            = values(aws_subnet.pub_subnet)[*].id
-
-  enable_deletion_protection = false
-}
-
-resource "aws_lb_listener" "front_end" {
-  load_balancer_arn = aws_lb.front_end.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.front_end.arn
-  }
-}
-
-resource "aws_lb_target_group" "front_end" {
-  name     = "front-end-lb-tg"
-  port     = 3000
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.vpc.id
-}
-
-# Autoscaling group
-resource "aws_launch_configuration" "ecs_launch_config" {
-  name_prefix           = "${var.name}-"
-  image_id              = data.aws_ami.ecs_ami.id
-  iam_instance_profile  = aws_iam_instance_profile.ecs_agent.name
-  security_groups       = [aws_security_group.presentation_tier.id]
-  user_data             = templatefile("user-data.sh.tpl", { cluster_name = "${aws_ecs_cluster.ecs_cluster_frontend.name}" })
-
-  instance_type         = "t2.micro"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_autoscaling_group" "public_ecs_asg" {
-  name                      = "asg"
-  vpc_zone_identifier       = values(aws_subnet.pub_subnet)[*].id
-  launch_configuration      = aws_launch_configuration.ecs_launch_config.name
-
-  desired_capacity          = 3
-  min_size                  = 1
-  max_size                  = 10
-  health_check_grace_period = 300
-  health_check_type         = "EC2"
-}
-
-# Frontend ECS
 # IAM for ECS
-data "aws_iam_policy_document" "ecs_agent" {
+data "aws_iam_policy_document" "ecs_agent_front" {
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -249,20 +262,20 @@ data "aws_iam_policy_document" "ecs_agent" {
   }
 }
 
-resource "aws_iam_role" "ecs_agent" {
+resource "aws_iam_role" "ecs_agent_front" {
   name               = var.frontend_name
-  assume_role_policy = data.aws_iam_policy_document.ecs_agent.json
+  assume_role_policy = data.aws_iam_policy_document.ecs_agent_front.json
 }
 
 
-resource "aws_iam_role_policy_attachment" "ecs_agent" {
-  role       = aws_iam_role.ecs_agent.name
+resource "aws_iam_role_policy_attachment" "ecs_agent_front" {
+  role       = aws_iam_role.ecs_agent_front.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
-resource "aws_iam_instance_profile" "ecs_agent" {
+resource "aws_iam_instance_profile" "ecs_agent_front" {
   name = var.frontend_name
-  role = aws_iam_role.ecs_agent.name
+  role = aws_iam_role.ecs_agent_front.name
 }
 
 # Dynamic AMI
@@ -291,6 +304,7 @@ resource "aws_ecs_cluster" "ecs_cluster_frontend" {
   name  = var.frontend_name
 }
 
+# Cloudwatch log group
 resource "aws_cloudwatch_log_group" "log_ecs_frontend" {
   name                = var.frontend_name
   retention_in_days   = 30
@@ -301,8 +315,8 @@ resource "aws_cloudwatch_log_group" "log_ecs_frontend" {
   }
 }
 
-# Placeholder task and service for
-data "template_file" "task_definition_template" {
+# Placeholder task and service for frontend
+data "template_file" "front_task_definition_template" {
   template = file("task_definition.json.tpl")
   vars = {
     REPOSITORY_URL = replace(aws_ecr_repository.docker_repo_frontend.repository_url, "https://", "")
@@ -311,9 +325,9 @@ data "template_file" "task_definition_template" {
   }
 }
 
-resource "aws_ecs_task_definition" "task_definition" {
+resource "aws_ecs_task_definition" "front_task_definition" {
   family                = var.frontend_name
-  container_definitions = data.template_file.task_definition_template.rendered
+  container_definitions = data.template_file.front_task_definition_template.rendered
   requires_compatibilities = ["EC2"]
   # network_mode             = "bridge"
   # cpu                      = "256"
@@ -323,12 +337,153 @@ resource "aws_ecs_task_definition" "task_definition" {
 resource "aws_ecs_service" "frontend_application" {
   name            = var.frontend_name
   cluster         = aws_ecs_cluster.ecs_cluster_frontend.id
-  task_definition = aws_ecs_task_definition.task_definition.arn
+  task_definition = aws_ecs_task_definition.front_task_definition.arn
   desired_count   = 2
 
   load_balancer {
     target_group_arn = aws_lb_target_group.front_end.arn
     container_name   = var.frontend_name
+    container_port   = 3000
+  }
+}
+
+#####################################################################
+# Backend application
+#####################################################################
+
+# Security groups
+resource "aws_security_group" "alb_application_tier" {
+  name        = "allow_connection_to_alb_application_tier"
+  description = "Allow HTTP"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    description     = "HTTP from anywhere"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.presentation_tier.id]
+  }
+
+  ingress {
+    description     = "HTTP from anywhere"
+    from_port       = 3000
+    to_port         = 3000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.presentation_tier.id]
+  }
+
+  tags = {
+    Name = "alb_application_tier_sg"
+  }
+}
+
+# Load Balancer
+resource "aws_lb" "back_end" {
+  name               = "${var.name}-back-end-lb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb_presentation_tier.id]
+  subnets            = values(aws_subnet.pub_subnet)[*].id
+
+  enable_deletion_protection = false
+}
+
+resource "aws_lb_listener" "back_end" {
+  load_balancer_arn = aws_lb.back_end.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.back_end.arn
+  }
+}
+
+resource "aws_lb_target_group" "back_end" {
+  name     = "back-end-lb-tg"
+  port     = 3000
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.vpc.id
+}
+
+# IAM for ECS
+data "aws_iam_policy_document" "ecs_agent_back" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "ecs_agent_back" {
+  name               = var.backend_name
+  assume_role_policy = data.aws_iam_policy_document.ecs_agent_back.json
+}
+
+
+resource "aws_iam_role_policy_attachment" "ecs_agent_back" {
+  role       = aws_iam_role.ecs_agent_back.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+resource "aws_iam_instance_profile" "ecs_agent_back" {
+  name = var.backend_name
+  role = aws_iam_role.ecs_agent_back.name
+}
+
+# ECR
+resource "aws_ecr_repository" "docker_repo_backend" {
+  name          = var.backend_name
+}
+
+# ECS
+resource "aws_ecs_cluster" "ecs_cluster_backend" {
+  name  = var.backend_name
+}
+
+# Cloudwatch log group
+resource "aws_cloudwatch_log_group" "log_ecs_backend" {
+  name                = var.backend_name
+  retention_in_days   = 30
+
+  tags = {
+    Environment = var.environment
+    Application = var.backend_name
+  }
+}
+
+# Placeholder task and service for backend
+data "template_file" "back_task_definition_template" {
+  template = file("task_definition.json.tpl")
+  vars = {
+    REPOSITORY_URL = replace(aws_ecr_repository.docker_repo_backend.repository_url, "https://", "")
+    ENV_VAR = var.environment
+    CONTAINER_NAME = var.backend_name
+  }
+}
+
+resource "aws_ecs_task_definition" "back_task_definition" {
+  family                = var.backend_name
+  container_definitions = data.template_file.back_task_definition_template.rendered
+  requires_compatibilities = ["EC2"]
+  # network_mode             = "bridge"
+  # cpu                      = "256"
+  # memory                   = "512"
+}
+
+resource "aws_ecs_service" "backend_application" {
+  name            = var.backend_name
+  cluster         = aws_ecs_cluster.ecs_cluster_backend.id
+  task_definition = aws_ecs_task_definition.back_task_definition.arn
+  desired_count   = 2
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.back_end.arn
+    container_name   = var.backend_name
     container_port   = 3000
   }
 }
