@@ -301,27 +301,28 @@ resource "aws_cloudwatch_log_group" "log_ecs_frontend" {
   }
 }
 
-# data "template_file" "task_definition_template" {
-#   template = file("task_definition.json.tpl")
-#   vars = {
-#     REPOSITORY_URL = replace(aws_ecr_repository.docker_repo_frontend.repository_url, "https://", "")
-#     ENV_VAR = var.environment
+# Placeholder task and service for
+data "template_file" "task_definition_template" {
+  template = file("task_definition.json.tpl")
+  vars = {
+    REPOSITORY_URL = replace(aws_ecr_repository.docker_repo_frontend.repository_url, "https://", "")
+    ENV_VAR = var.environment
 
-#   }
-# }
+  }
+}
 
-# resource "aws_ecs_task_definition" "task_definition" {
-#   family                = var.frontend_name
-#   container_definitions = data.template_file.task_definition_template.rendered
-#   requires_compatibilities = ["EC2"]
-#   # network_mode             = "bridge"
-#   # cpu                      = "256"
-#   # memory                   = "512"
-# }
+resource "aws_ecs_task_definition" "task_definition" {
+  family                = var.frontend_name
+  container_definitions = data.template_file.task_definition_template.rendered
+  requires_compatibilities = ["EC2"]
+  # network_mode             = "bridge"
+  # cpu                      = "256"
+  # memory                   = "512"
+}
 
-# resource "aws_ecs_service" "frontend_application" {
-#   name            = var.frontend_name
-#   cluster         = aws_ecs_cluster.ecs_cluster_frontend.id
-#   task_definition = aws_ecs_task_definition.task_definition.arn
-#   desired_count   = 2
-# }
+resource "aws_ecs_service" "frontend_application" {
+  name            = var.frontend_name
+  cluster         = aws_ecs_cluster.ecs_cluster_frontend.id
+  task_definition = aws_ecs_task_definition.task_definition.arn
+  desired_count   = 2
+}
