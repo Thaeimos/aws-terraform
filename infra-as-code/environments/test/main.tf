@@ -329,9 +329,6 @@ resource "aws_ecs_task_definition" "front_task_definition" {
   family                = var.frontend_name
   container_definitions = data.template_file.front_task_definition_template.rendered
   requires_compatibilities = ["EC2"]
-  # network_mode             = "bridge"
-  # cpu                      = "256"
-  # memory                   = "512"
 }
 
 resource "aws_ecs_service" "frontend_application" {
@@ -384,7 +381,7 @@ resource "aws_lb" "back_end" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_presentation_tier.id]
-  subnets            = values(aws_subnet.pub_subnet)[*].id
+  subnets            = values(aws_subnet.priv_subnet)[*].id
 
   enable_deletion_protection = false
 }
@@ -401,10 +398,16 @@ resource "aws_lb_listener" "back_end" {
 }
 
 resource "aws_lb_target_group" "back_end" {
-  name     = "back-end-lb-tg"
-  port     = 3000
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.vpc.id
+  name          = "back-end-lb-tg"
+  port          = 3000
+  protocol      = "HTTP"
+  vpc_id        = aws_vpc.vpc.id
+  target_type   = "ip"
+
+  health_check {
+    matcher   = "200,301,302"
+    path      = "/"
+  }
 }
 
 # IAM for ECS
@@ -427,7 +430,7 @@ resource "aws_iam_role" "ecs_agent_back" {
 
 resource "aws_iam_role_policy_attachment" "ecs_agent_back" {
   role       = aws_iam_role.ecs_agent_back.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 resource "aws_iam_instance_profile" "ecs_agent_back" {
@@ -437,7 +440,7 @@ resource "aws_iam_instance_profile" "ecs_agent_back" {
 
 # ECR
 resource "aws_ecr_repository" "docker_repo_backend" {
-  name          = var.backend_name
+  name  = var.backend_name
 }
 
 # ECS
@@ -467,9 +470,13 @@ data "template_file" "back_task_definition_template" {
 }
 
 resource "aws_ecs_task_definition" "back_task_definition" {
-  family                = var.backend_name
-  container_definitions = data.template_file.back_task_definition_template.rendered
-  requires_compatibilities = ["FARGATE"]
+  family                     = var.backend_name
+  container_definitions     = data.template_file.back_task_definition_template.rendered
+  requires_compatibilities  = ["FARGATE"]
+  network_mode              = "awsvpc"
+  cpu                       = "256"     # Need CPU and memory at the task level, not container level
+  memory                    = "512"
+  execution_role_arn        = "${aws_iam_role.ecs_agent_back.arn}"
 }
 
 resource "aws_ecs_service" "backend_application" {
@@ -482,5 +489,9 @@ resource "aws_ecs_service" "backend_application" {
     target_group_arn = aws_lb_target_group.back_end.arn
     container_name   = var.backend_name
     container_port   = 3000
+  }
+
+  network_configuration {
+    subnets          = values(aws_subnet.priv_subnet)[*].id
   }
 }
