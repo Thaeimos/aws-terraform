@@ -141,32 +141,6 @@ resource "aws_lb_target_group" "front_end" {
   vpc_id   = aws_vpc.vpc.id
 }
 
-# Autoscaling group
-resource "aws_launch_configuration" "ecs_launch_config" {
-  name_prefix           = "${var.name}-"
-  image_id              = data.aws_ami.ecs_ami.id
-  iam_instance_profile  = aws_iam_instance_profile.ecs_agent_front.name
-  security_groups       = [aws_security_group.presentation_tier.id]
-  user_data             = templatefile("user-data.sh.tpl", { cluster_name = "${aws_ecs_cluster.ecs_cluster_frontend.name}" })
-
-  instance_type         = "t2.micro"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_autoscaling_group" "public_ecs_asg" {
-  name                      = "asg"
-  vpc_zone_identifier       = values(aws_subnet.pub_subnet)[*].id
-  launch_configuration      = aws_launch_configuration.ecs_launch_config.name
-
-  desired_capacity          = 3
-  min_size                  = 1
-  max_size                  = 10
-  health_check_grace_period = 300
-  health_check_type         = "EC2"
-}
 
 #####################################################################
 # Frontend application
@@ -267,7 +241,6 @@ resource "aws_iam_role" "ecs_agent_front" {
   assume_role_policy = data.aws_iam_policy_document.ecs_agent_front.json
 }
 
-
 resource "aws_iam_role_policy_attachment" "ecs_agent_front" {
   role       = aws_iam_role.ecs_agent_front.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
@@ -296,7 +269,7 @@ data "aws_ami" "ecs_ami" {
 
 # ECR
 resource "aws_ecr_repository" "docker_repo_frontend" {
-  name          = var.frontend_name
+  name  = var.frontend_name
 }
 
 # ECS
@@ -335,7 +308,13 @@ resource "aws_ecs_service" "frontend_application" {
   name            = var.frontend_name
   cluster         = aws_ecs_cluster.ecs_cluster_frontend.id
   task_definition = aws_ecs_task_definition.front_task_definition.arn
-  desired_count   = 2
+  desired_count   = 1
+
+  capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.ec2.name
+    weight            = 100
+    base              = 0
+  }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.front_end.arn
@@ -343,6 +322,90 @@ resource "aws_ecs_service" "frontend_application" {
     container_port   = 3000
   }
 }
+
+# Autoscaling group
+resource "aws_launch_configuration" "ecs_launch_config" {
+  name_prefix           = "${var.name}-"
+  image_id              = data.aws_ami.ecs_ami.id
+  iam_instance_profile  = aws_iam_instance_profile.ecs_agent_front.name
+  security_groups       = [aws_security_group.presentation_tier.id]
+  user_data             = templatefile("user-data.sh.tpl", { cluster_name = "${aws_ecs_cluster.ecs_cluster_frontend.name}" })
+
+  instance_type         = "t2.micro"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_group" "public_ecs_asg" {
+  name                      = "asg"
+  vpc_zone_identifier       = values(aws_subnet.pub_subnet)[*].id
+  launch_configuration      = aws_launch_configuration.ecs_launch_config.name
+
+  desired_capacity          = 3
+  min_size                  = 1
+  max_size                  = 20
+  health_check_grace_period = 90
+  health_check_type         = "EC2"
+
+  instance_refresh {
+    strategy = "Rolling"
+  }
+}
+
+resource "aws_ecs_capacity_provider" "ec2" {
+  name = "ec2"
+  auto_scaling_group_provider {
+    auto_scaling_group_arn = aws_autoscaling_group.public_ecs_asg.arn
+    managed_scaling {
+      target_capacity           = 100
+      instance_warmup_period    = 30
+      minimum_scaling_step_size = 1
+      maximum_scaling_step_size = aws_autoscaling_group.public_ecs_asg.max_size
+      status                    = "ENABLED"
+    }
+    managed_termination_protection = "DISABLED"
+  }
+}
+
+resource "aws_ecs_cluster_capacity_providers" "front_provider" {
+  cluster_name = aws_ecs_cluster.ecs_cluster_frontend.name
+  capacity_providers = [
+    aws_ecs_capacity_provider.ec2.name
+  ]
+  default_capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.ec2.name
+    weight            = 100
+    base              = 0
+  }
+}
+
+resource "aws_appautoscaling_target" "ecs" {
+  min_capacity       = 5
+  max_capacity       = 20
+  resource_id        = "service/${aws_ecs_cluster.ecs_cluster_frontend.name}/${aws_ecs_service.frontend_application.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "ecs_policy" {
+  name               = "ecs-scaling"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    target_value       = 70
+    scale_in_cooldown  = 0
+    scale_out_cooldown = 0
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+  }
+}
+
 
 #####################################################################
 # Backend application
