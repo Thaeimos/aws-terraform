@@ -26,14 +26,20 @@ jobs:
     steps:
       - name: Setup Environment Name
         id: env-name
-        run: echo "::set-output name=env::${{ fromJSON('{"main":"production","develop":"development"}')[github.ref_name] }}"
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+              echo "Environment=production" >> "$GITHUB_ENV"
+          else
+              echo "Environment=development" >> "$GITHUB_ENV"
+          fi
 
       - name: Debug environment selection
         run: |
-          echo "Environment: ${{ needs.setup-stage.outputs.env-name }}"
+          env | grep 
 
   deploy:
     name: Deploy Frontend to ECS EC2
+    needs: setup-stage
     runs-on: ubuntu-latest
     environment: production
     defaults:
