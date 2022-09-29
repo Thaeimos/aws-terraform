@@ -21,23 +21,23 @@ jobs:
   setup-stage:
     name: Set environment based on branch
     outputs:
-      env-name: ${{ steps.env-name.outputs.env }}
+      phase: ${{ steps.env-name.outputs.phase }}
     runs-on: ubuntu-latest
     steps:
       - name: Setup Environment Name
         id: env-name
         run: |
-          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-              echo "Environment=production" >> "$GITHUB_ENV"
+          if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
+              echo "::set-output name=phase::production"
           else
-              echo "Environment=development" >> "$GITHUB_ENV"
+              echo "::set-output name=phase::development"
           fi
 
   deploy:
     name: Deploy Frontend to ECS EC2
     needs: setup-stage
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{needs.setup-stage.outputs.phase}}
     defaults:
       run:
         shell: bash
