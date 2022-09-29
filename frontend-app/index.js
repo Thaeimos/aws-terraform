@@ -1,19 +1,37 @@
-const express = require('express')
-var child_process = require('child_process');
-const app = express()
-const port = 3000
+import express from 'express';
+import fetch from 'node-fetch';
 
-function runCmd(cmd)
-{
-  var resp = child_process.execSync(cmd);
-  var result = resp.toString('UTF8');
-  return result;
-}
+const PORT = process.env.PORT || 3000
 
-var cmd = "curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone";  
-var zone = runCmd(cmd);
+let app = express()
+const APPLICATION_LOAD_BALANCER = process.env.APPLICATION_LOAD_BALANCER;
 
-app.get('/', (req, res) => res.send(`Hello World from ${zone}!`))
+app.get('/', async (req, res) => {
+  fetch('http://169.254.169.254/latest/meta-data/hostname').then(async(response) => {
+    const hostname = await response.text();
+    res.send(`Hello from ${hostname}`)
+  })
+})
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.get('/init', async (req, res) => {
+  fetch(`http://${APPLICATION_LOAD_BALANCER}/init`).then(async (response) => {
+    const data = await response.json();
+    res.send(data)
+  })
+})
 
+app.get('/users', async (req, res) => {
+  fetch(`http://${APPLICATION_LOAD_BALANCER}/users`).then(async (response) => {
+    const data = await response.json();
+    res.send(data)
+  })
+})
+
+// Custom 404 route not found handler
+app.use((req, res) => {
+  res.status(404).send('404 not found')
+})
+
+app.listen(PORT, () => {
+  console.log(`Listening on PORT ${PORT}`);
+})
