@@ -61,6 +61,8 @@ List the ready features here:
 - Github pipelines to manage applications
     - Deploy on merge.
     - Pinned versions for external actions.
+    - Use environments in GH:
+        - We have different set of variables that, depending on the branch you are merging to, will have different values. Very useful when you wanna have a different set of credentials, for example, for your production and development environments.
 - Documentation
 
 
@@ -111,7 +113,7 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - Docker proper credentials https://docs.docker.com/engine/reference/commandline/login/#credentials-store
 - Substitute variables on task definition for AWS workflow
 - Lint and security scan on PR on applications
-- Use environments in GH https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+ 
 - Create those using GH API https://stackoverflow.com/questions/70943164/create-environment-for-repository-using-gh
 - Test ASGs front and back
 - Docker scan in pipeline
@@ -125,7 +127,8 @@ Give credit here.
 - The inspiration for the spot instances [comes from here](https://github.com/aws-samples/ecs-refarch-mixed-mode/blob/master/README.md).
 - For the user creation we used [this post](https://blog.gitguardian.com/managing-aws-iam-with-terraform-part-1/).
 - Dynamic subnets creation based on this [Stackoverflow post](https://stackoverflow.com/questions/63309824/for-each-availability-zone-within-an-aws-region/63310014#63310014).
-- We use code for the frontend and backend applications based on this [post](https://dev.to/eelayoubi/building-a-ha-aws-architecture-using-terraform-part-2-30gm)
+- We use code for the frontend and backend applications based on this [post](https://dev.to/eelayoubi/building-a-ha-aws-architecture-using-terraform-part-2-30gm).
+- Heavily use of environments to segment variables, as explained in this [document](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment).
 
 
 
