@@ -38,7 +38,7 @@ jobs:
     needs: setup-stage
     runs-on: ubuntu-latest
     environment: 
-      name: ${{needs.setup-stage.outputs.phase}}
+      name: Rafoncio
       url: https://github.com/${{needs.setup-stage.outputs.phase}}
     defaults:
       run:
