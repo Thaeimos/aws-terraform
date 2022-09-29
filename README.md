@@ -45,16 +45,18 @@ List the ready features here:
     - Dynamic AMI as you can see [here](/infra-as-code/environments/test/main.tf#L133).
     - Template substitution for user-data.sh.
 - VPC
-    - Name as desired.
+    - Name as desired (VPC01).
     - Dynamic public and private subnets creation based on Availability Zones.
+    - Route tables to support the subnets.
+    - Internet gateway so the frontend components can talk to the exterior.
     - Variable that tags the environment.
     - Create log partitions for applications.
-    - Frontend application using ECS (EC2) as a public component with:
-        - Security groups.
-        - Roles.
-        - Cloudwatch log group.
-        - Load balancer.
-        - Auto-scalation group.
+- Frontend application using ECS (EC2) as a public component with:
+    - Security groups.
+    - Roles.
+    - Cloudwatch log group.
+    - Load balancer.
+    - Auto-scalation group.
     - External endpoint of type "application" for exposing the 3 tier web stack.
 - Github pipelines to manage applications
     - Deploy on merge
@@ -85,7 +87,7 @@ Project is: _Actively working_.
 ## Room for Improvement
 Include areas you believe need improvement / could be improved. Also add TODOs for future development.
 
-- Generate a VPC (VPC01) with public and private subnets, and the required subnets elements (Route tables, Internet gateways, NAT or instance gateways, etc).
+- Generate a VPC (VPC01) with private subnets, and the required subnets elements (Route tables, etc).
 
 - Provision an application using ECS with EC2 and Fargate with the following elements: public component, private component, database component and all the required elements (security groups, roles, log groups, etc). The components must we interconnected, so for example the public layer must connect to the application layer and the application layer must connect to the database layer. A load balancer with target and auto-scalation groups must be utilized for each layer.
 - For the database layer, use an AWS managed service.
