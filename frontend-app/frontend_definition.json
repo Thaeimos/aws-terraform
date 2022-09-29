@@ -27,7 +27,7 @@
         ]
      }
   ],
-  "cpu": "256",
+  "cpu": "768",
   "family": "frontend-app-ecs-ec2",
   "memory": "768",
   "requiresCompatibilities": [ 
