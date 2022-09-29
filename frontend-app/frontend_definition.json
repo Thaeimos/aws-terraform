@@ -29,7 +29,7 @@
   ],
   "cpu": "256",
   "family": "frontend-app-ecs-ec2",
-  "memory": "512",
+  "memory": "768",
   "requiresCompatibilities": [ 
       "EC2" 
    ]
