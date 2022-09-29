@@ -59,7 +59,8 @@ List the ready features here:
     - Auto-scalation group.
 - External endpoint of type "application" for exposing the 3 tier web stack.
 - Github pipelines to manage applications
-    - Deploy on merge
+    - Deploy on merge.
+    - Pinned versions for external actions.
 - Documentation
 
 
