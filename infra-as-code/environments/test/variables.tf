@@ -30,3 +30,8 @@ variable "frontend_name" {
   type        = string
   description = "Name for the application and related infrastructure that supports the frontend. This should be set up on the task file for the application."
 }
+
+variable "backend_name" {
+  type        = string
+  description = "Name for the application and related infrastructure that supports the backend. This should be set up on the task file for the application."
+}
