@@ -1,6 +1,6 @@
 [
   {
-    "name": "frontend-task",
+    "name": "${CONTAINER_NAME}",
     "image": "${REPOSITORY_URL}:latest",
     "essential": true,
     "environment": [
