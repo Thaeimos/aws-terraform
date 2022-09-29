@@ -469,10 +469,7 @@ data "template_file" "back_task_definition_template" {
 resource "aws_ecs_task_definition" "back_task_definition" {
   family                = var.backend_name
   container_definitions = data.template_file.back_task_definition_template.rendered
-  requires_compatibilities = ["EC2"]
-  # network_mode             = "bridge"
-  # cpu                      = "256"
-  # memory                   = "512"
+  requires_compatibilities = ["FARGATE"]
 }
 
 resource "aws_ecs_service" "backend_application" {
