@@ -283,7 +283,7 @@ data "aws_ami" "ecs_ami" {
 
 # ECR
 resource "aws_ecr_repository" "docker_repo_frontend" {
-  name  = var.frontend_name
+  name          = var.frontend_name
 }
 
 # ECS
@@ -307,7 +307,7 @@ data "template_file" "task_definition_template" {
   vars = {
     REPOSITORY_URL = replace(aws_ecr_repository.docker_repo_frontend.repository_url, "https://", "")
     ENV_VAR = var.environment
-
+    CONTAINER_NAME = var.frontend_name
   }
 }
 
@@ -325,4 +325,10 @@ resource "aws_ecs_service" "frontend_application" {
   cluster         = aws_ecs_cluster.ecs_cluster_frontend.id
   task_definition = aws_ecs_task_definition.task_definition.arn
   desired_count   = 2
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.front_end.arn
+    container_name   = var.frontend_name
+    container_port   = 3000
+  }
 }
