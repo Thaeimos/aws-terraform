@@ -35,7 +35,7 @@ jobs:
 
       - name: Debug environment selection
         run: |
-          env | grep 
+          env 
 
   deploy:
     name: Deploy Frontend to ECS EC2
