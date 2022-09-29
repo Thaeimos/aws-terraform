@@ -57,7 +57,7 @@ List the ready features here:
     - Cloudwatch log group.
     - Load balancer.
     - Auto-scalation group.
-    - External endpoint of type "application" for exposing the 3 tier web stack.
+- External endpoint of type "application" for exposing the 3 tier web stack.
 - Github pipelines to manage applications
     - Deploy on merge
 - Documentation
@@ -112,7 +112,8 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - Lint and security scan on PR on applications
 - Use environments in GH https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
 - Create those using GH API https://stackoverflow.com/questions/70943164/create-environment-for-repository-using-gh
-- Test ASGs
+- Test ASGs front and back
+- Docker scan in pipeline
 
 
 
@@ -123,7 +124,7 @@ Give credit here.
 - The inspiration for the spot instances [comes from here](https://github.com/aws-samples/ecs-refarch-mixed-mode/blob/master/README.md).
 - For the user creation we used [this post](https://blog.gitguardian.com/managing-aws-iam-with-terraform-part-1/).
 - Dynamic subnets creation based on this [Stackoverflow post](https://stackoverflow.com/questions/63309824/for-each-availability-zone-within-an-aws-region/63310014#63310014).
-- We use code for the frontend application based on this [post](https://medium.com/avmconsulting-blog/how-to-deploy-a-dockerised-node-js-application-on-aws-ecs-with-terraform-3e6bceb48785).
+- We use code for the frontend and backend applications based on this [post](https://dev.to/eelayoubi/building-a-ha-aws-architecture-using-terraform-part-2-30gm)
 
 
 
