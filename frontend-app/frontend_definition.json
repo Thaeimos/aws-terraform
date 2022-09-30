@@ -21,8 +21,12 @@
         ],
         "environment": [
           {
-              "name": "environment",
-              "value": "DEPRECATED"
+              "name": "Environment",
+              "value": "ENV_PLACEHOLDER"
+          },
+          {
+            "name": "APPLICATION_LOAD_BALANCER",
+            "value": "APP_LB_PLACEHOLDER"
           }
         ]
      }
