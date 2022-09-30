@@ -9,20 +9,23 @@ const APPLICATION_LOAD_BALANCER = process.env.APPLICATION_LOAD_BALANCER;
 app.get('/', async (req, res) => {
   fetch('http://169.254.169.254/latest/meta-data/hostname').then(async(response) => {
     const hostname = await response.text();
+    console.log("Received a / request!");
     res.send(`Hello from ${hostname}\nThe loadbalancer for the backend is ${process.env.APPLICATION_LOAD_BALANCER}`)
   })
 })
 
 app.get('/init', async (req, res) => {
-  fetch(`http://${APPLICATION_LOAD_BALANCER}/init`).then(async (response) => {
+  fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/init`).then(async (response) => {
     const data = await response.json();
+    console.log("Received a /init request!");
     res.send(data)
   })
 })
 
 app.get('/users', async (req, res) => {
-  fetch(`http://${APPLICATION_LOAD_BALANCER}/users`).then(async (response) => {
+  fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/users`).then(async (response) => {
     const data = await response.json();
+    console.log("Received a /users request!");
     res.send(data)
   })
 })
