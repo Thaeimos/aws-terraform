@@ -71,10 +71,11 @@ jobs:
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Substitute variables and secrets in task definition
+        # Use comma in the first sed because of the "/" in the URL
         run: |
-          sed 's/ECR_URL_PLACEHOLDER/${{ secrets.FRONT_REG_URL }}/g' ${{ env.ECS_TASK_DEFINITION }}
-          sed 's/REGION_PLACEHOLDER/${{ secrets.AWS_REGION }}/g' ${{ env.ECS_TASK_DEFINITION }}
-          sed 's/NAME_PLACEHOLDER/${{ secrets.FRONT_NAME }}/g' ${{ env.ECS_TASK_DEFINITION }}
+          sed -i 's,ECR_URL_PLACEHOLDER,${{ secrets.FRONT_REG_URL }},g' ${{ env.ECS_TASK_DEFINITION }} 
+          sed -i 's/REGION_PLACEHOLDER/${{ secrets.AWS_REGION }}/g' ${{ env.ECS_TASK_DEFINITION }}
+          sed -i 's/NAME_PLACEHOLDER/${{ secrets.FRONT_NAME }}/g' ${{ env.ECS_TASK_DEFINITION }}
 
       - name: Debug task definition
         run: |
