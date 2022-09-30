@@ -370,9 +370,6 @@ resource "aws_autoscaling_group" "public_ecs_asg" {
     min_size                    = 3
     max_group_prepared_capacity = 10
 
-    instance_reuse_policy {
-      reuse_on_scale_in = true
-    }
   }
 }
 
