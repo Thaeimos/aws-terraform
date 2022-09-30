@@ -308,7 +308,7 @@ resource "aws_ecs_service" "frontend_application" {
   name            = var.frontend_name
   cluster         = aws_ecs_cluster.ecs_cluster_frontend.id
   task_definition = aws_ecs_task_definition.front_task_definition.arn
-  desired_count   = 5
+  desired_count   = 3
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.ec2.name
@@ -340,6 +340,10 @@ resource "aws_launch_configuration" "ecs_launch_config" {
   lifecycle {
     create_before_destroy = true
   }
+
+  root_block_device {
+    encrypted = true
+  }
 }
 
 resource "aws_autoscaling_group" "public_ecs_asg" {
@@ -355,6 +359,20 @@ resource "aws_autoscaling_group" "public_ecs_asg" {
 
   instance_refresh {
     strategy = "Rolling"
+  }
+
+  lifecycle {
+    ignore_changes = [desired_capacity]
+  }
+
+  warm_pool {
+    pool_state                  = "Hibernated"
+    min_size                    = 3
+    max_group_prepared_capacity = 10
+
+    instance_reuse_policy {
+      reuse_on_scale_in = true
+    }
   }
 }
 
@@ -386,7 +404,7 @@ resource "aws_ecs_cluster_capacity_providers" "front_provider" {
 }
 
 resource "aws_appautoscaling_target" "ecs" {
-  min_capacity       = 5
+  min_capacity       = 4
   max_capacity       = 20
   resource_id        = "service/${aws_ecs_cluster.ecs_cluster_frontend.name}/${aws_ecs_service.frontend_application.name}"
   scalable_dimension = "ecs:service:DesiredCount"
