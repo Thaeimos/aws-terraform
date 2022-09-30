@@ -57,12 +57,14 @@ List the ready features here:
     - Cloudwatch log group.
     - Load balancer.
     - Auto-scalation group.
+        - Warm up instances included for rapid scale outs.
 - External endpoint of type "application" for exposing the 3 tier web stack.
 - Github pipelines to manage applications
     - Deploy on merge.
     - Pinned versions for external actions.
     - Use environments in GH:
         - We have different set of variables that, depending on the branch you are merging to, will have different values. Very useful when you wanna have a different set of credentials, for example, for your production and development environments.
+        - We can create the environment and the secrets using the [instructions provided](/utilities/github-repo-setup/).
 - Documentation
 
 
@@ -102,6 +104,7 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - Blue/Green deployments - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-blue-green.html ?
 - Test then prod
 - Github pipelines
+    - Docker scan in pipeline
 - Module pinning - Perhaps using https://github.com/philips-software/terraform-aws-ecs/tree/2.2.0 ?
 - Generate MFA for read only users.
 - Encrypt password for read only users.
@@ -110,13 +113,15 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - SSL
     - Create certificates and attach them
     - Redirect http to https
-- Docker proper credentials https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+- Docker multistage
+- Cache in pipelines for docker
 - Substitute variables on task definition for AWS workflow
 - Lint and security scan on PR on applications
  
-- Create those using GH API https://stackoverflow.com/questions/70943164/create-environment-for-repository-using-gh
 - Test ASGs front and back
-- Docker scan in pipeline
+    - Front on multiple deploys tasks
+
+- Test external LB connectivity and ports
 
 
 
