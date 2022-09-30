@@ -22,7 +22,7 @@
         "environment": [
           {
               "name": "environment",
-              "value": "TEST"
+              "value": "DEPRECATED"
           }
         ]
      }
