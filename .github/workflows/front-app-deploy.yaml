@@ -76,6 +76,10 @@ jobs:
           sed 's/REGION_PLACEHOLDER/${{ secrets.AWS_REGION }}/g' ${{ env.ECS_TASK_DEFINITION }}
           sed 's/NAME_PLACEHOLDER/${{ secrets.FRONT_NAME }}/g' ${{ env.ECS_TASK_DEFINITION }}
 
+      - name: Debug task definition
+        run: |
+          cat ${{ env.ECS_TASK_DEFINITION }}
+
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1.1.1
