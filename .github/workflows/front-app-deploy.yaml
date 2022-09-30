@@ -73,9 +73,10 @@ jobs:
       - name: Substitute variables and secrets in task definition
         # Use comma in the first sed because of the "/" in the URL
         run: |
-          sed -i 's,ECR_URL_PLACEHOLDER,${{ secrets.FRONT_REG_URL }},g' ${{ env.ECS_TASK_DEFINITION }} 
-          sed -i 's/REGION_PLACEHOLDER/${{ secrets.AWS_REGION }}/g' ${{ env.ECS_TASK_DEFINITION }}
-          sed -i 's/NAME_PLACEHOLDER/${{ secrets.FRONT_NAME }}/g' ${{ env.ECS_TASK_DEFINITION }}
+          FILE=$(echo "frontend-app/frontend_definition.json" | sed 's,.*/,,')
+          sed -i 's,ECR_URL_PLACEHOLDER,${{ secrets.FRONT_REG_URL }},g' $FILE 
+          sed -i 's/REGION_PLACEHOLDER/${{ secrets.AWS_REGION }}/g' $FILE
+          sed -i 's/NAME_PLACEHOLDER/${{ secrets.FRONT_NAME }}/g' $FILE
 
       - name: Debug task definition
         run: |
