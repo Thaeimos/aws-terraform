@@ -80,7 +80,8 @@ jobs:
 
       - name: Debug task definition
         run: |
-          cat ${{ env.ECS_TASK_DEFINITION }}
+          FILE=$(echo "frontend-app/frontend_definition.json" | sed 's,.*/,,')
+          cat $FILE
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
