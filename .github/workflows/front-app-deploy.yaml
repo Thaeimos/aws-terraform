@@ -87,3 +87,8 @@ jobs:
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
+
+      - name: Apply configuration for the ECS service
+        run: |
+          COUNT=$(jq -r '.desired_count' service.json)
+          aws ecs update-service --desired-count $COUNT --cluster frontend-app-ecs-ec2 --service frontend-app-ecs-ec2  --deployment-configuration "maximumPercent=150,minimumHealthyPercent=100"
