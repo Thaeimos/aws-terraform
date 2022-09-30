@@ -2,16 +2,16 @@
   "containerDefinitions": [ 
      { 
         "essential": true,
-        "image": "790577265452.dkr.ecr.eu-west-2.amazonaws.com/frontend-app-ecs-ec2:latest", 
+        "image": "ECR_URL_PLACEHOLDER:latest", 
         "logConfiguration": { 
            "logDriver": "awslogs",
            "options": { 
-              "awslogs-group" : "frontend-app-ecs-ec2",
-              "awslogs-region": "eu-west-2",
+              "awslogs-group" : "NAME_PLACEHOLDER",
+              "awslogs-region": "REGION_PLACEHOLDER",
               "awslogs-stream-prefix": "ecs"
            }
         },
-        "name": "frontend-app-ecs-ec2",
+        "name": "NAME_PLACEHOLDER",
         "portMappings": [ 
            { 
               "containerPort": 3000,
@@ -28,7 +28,7 @@
      }
   ],
   "cpu": "768",
-  "family": "frontend-app-ecs-ec2",
+  "family": "NAME_PLACEHOLDER",
   "memory": "768",
   "requiresCompatibilities": [ 
       "EC2" 
