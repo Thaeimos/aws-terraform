@@ -77,6 +77,8 @@ jobs:
           sed -i 's,ECR_URL_PLACEHOLDER,${{ secrets.FRONT_REG_URL }},g' $FILE 
           sed -i 's/REGION_PLACEHOLDER/${{ secrets.AWS_REGION }}/g' $FILE
           sed -i 's/NAME_PLACEHOLDER/${{ secrets.FRONT_NAME }}/g' $FILE
+          sed -i 's/ENV_PLACEHOLDER/${{ needs.setup-stage.outputs.phase }}/g' $FILE
+          sed -i 's/APP_LB_PLACEHOLDER/${{ secrets.BACK_REG_URL }}/g' $FILE
 
       - name: Debug task definition
         run: |
@@ -90,10 +92,6 @@ jobs:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
-          environment-variables: |
-            LOG_LEVEL=info
-            ENVIRONMENT=${{needs.setup-stage.outputs.phase}}
-            APPLICATION_LOAD_BALANCER=${{ secrets.BACK_REG_URL }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1.4.9
