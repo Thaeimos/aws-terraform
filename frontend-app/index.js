@@ -20,16 +20,16 @@ app.get('/', async (req, res) => {
 
 app.get('/init', async (req, res) => {
   fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/init`).then(async (response) => {
-    const data = await response.json();
     console.log("Received a /init request!");
+    const data = await response.json();
     res.send(data)
   })
 })
 
 app.get('/users', async (req, res) => {
   fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/users`).then(async (response) => {
-    const data = await response.json();
     console.log("Received a /users request!");
+    const data = await response.json();
     res.send(data)
   })
 })
