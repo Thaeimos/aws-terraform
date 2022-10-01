@@ -1,0 +1,36 @@
+{
+  "containerDefinitions": [ 
+     { 
+        "essential": true,
+        "image": "ECR_URL_PLACEHOLDER:latest", 
+        "logConfiguration": { 
+           "logDriver": "awslogs",
+           "options": { 
+              "awslogs-group" : "NAME_PLACEHOLDER",
+              "awslogs-region": "REGION_PLACEHOLDER",
+              "awslogs-stream-prefix": "ecs"
+           }
+        },
+        "name": "NAME_PLACEHOLDER",
+        "portMappings": [ 
+           { 
+              "containerPort": 3000,
+              "hostPort": 3000,
+              "protocol": "tcp"
+           }
+        ],
+        "environment": [
+          {
+              "name": "Environment",
+              "value": "DEPRECATED"
+          }
+        ]
+     }
+  ],
+  "cpu": "768",
+  "family": "NAME_PLACEHOLDER",
+  "memory": "768",
+  "requiresCompatibilities": [ 
+      "EC2" 
+   ]
+}
