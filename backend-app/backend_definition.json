@@ -30,7 +30,8 @@
   "cpu": "768",
   "family": "NAME_PLACEHOLDER",
   "memory": "768",
+  "networkMode": "awsvpc",
   "requiresCompatibilities": [ 
-      "EC2" 
+      "FARGATE" 
    ]
 }
