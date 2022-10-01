@@ -106,4 +106,4 @@ jobs:
       - name: Apply configuration for the ECS service
         run: |
           COUNT=$(jq -r '.desired_count' service.json)
-          aws ecs update-service --desired-count $COUNT --cluster ${{ secrets.FRONT_NAME }} --service ${{ secrets.FRONT_NAME }} --deployment-configuration "maximumPercent=150,minimumHealthyPercent=100"
+          aws ecs update-service --desired-count $COUNT --cluster ${{ secrets.FRONT_NAME }} --service ${{ secrets.FRONT_NAME }} --deployment-configuration "maximumPercent=200,minimumHealthyPercent=75"
