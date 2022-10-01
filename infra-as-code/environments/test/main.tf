@@ -460,7 +460,7 @@ resource "aws_security_group" "alb_application_tier" {
 # Load Balancer
 resource "aws_lb" "back_end" {
   name               = "${var.name}-back-end-lb"
-  internal           = false
+  internal           = true
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_presentation_tier.id]
   subnets            = values(aws_subnet.priv_subnet)[*].id
