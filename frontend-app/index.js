@@ -10,7 +10,7 @@ app.get('/', async (req, res) => {
   fetch('http://169.254.169.254/latest/meta-data/hostname').then(async(response) => {
     const hostname = await response.text();
     console.log("Received a / request!");
-    res.send(`Hello from ${hostname}\nThe loadbalancer for the backend is ${process.env.APPLICATION_LOAD_BALANCER}`)
+    res.send(`Hello from ${hostname} <br/>The loadbalancer for the backend is ${process.env.APPLICATION_LOAD_BALANCER}`)
   })
 })
 
