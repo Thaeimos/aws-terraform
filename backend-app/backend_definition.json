@@ -27,9 +27,9 @@
         ]
      }
   ],
-  "cpu": "768",
+  "cpu": "512",
   "family": "NAME_PLACEHOLDER",
-  "memory": "768",
+  "memory": "1024",
   "networkMode": "awsvpc",
   "executionRoleArn": "arn:aws:iam::790577265452:role/backend-app-ecs-far",
   "requiresCompatibilities": [ 
