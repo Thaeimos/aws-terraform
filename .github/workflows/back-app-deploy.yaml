@@ -77,6 +77,7 @@ jobs:
           sed -i 's,ECR_URL_PLACEHOLDER,${{ secrets.FRONT_REG_URL }},g' $FILE 
           sed -i 's/REGION_PLACEHOLDER/${{ secrets.AWS_REGION }}/g' $FILE
           sed -i 's/NAME_PLACEHOLDER/${{ secrets.BACK_NAME }}/g' $FILE
+          sed -i 's/ROLE_PLACEHOLDER/${{ secrets.BACK_ROLE_TASK }}/g' $FILE
 
       - name: Debug task definition
         run: |
