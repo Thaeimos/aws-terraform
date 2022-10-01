@@ -93,7 +93,7 @@ jobs:
           environment-variables: |
             LOG_LEVEL=info
             ENVIRONMENT=${{needs.setup-stage.outputs.phase}}
-            APPLICATION_LOAD_BALANCER=${{ secrets.BACK_REG_URL }}
+            APPLICATION_LOAD_BALANCER=${{ secrets.BACK_LB_DNS }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1.4.9
