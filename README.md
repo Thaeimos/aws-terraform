@@ -65,6 +65,7 @@ List the ready features here:
     - Use environments in GH:
         - We have different set of variables that, depending on the branch you are merging to, will have different values. Very useful when you wanna have a different set of credentials, for example, for your production and development environments.
         - We can create the environment and the secrets using the [instructions provided](/utilities/github-repo-setup/).
+    - Variable substitution for the ECS tasks using secrets. Better centralized secret and variables storage and a lot of reusability.
 - Documentation
 
 
@@ -115,13 +116,12 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
     - Redirect http to https
 - Docker multistage
 - Cache in pipelines for docker
-- Substitute variables on task definition for AWS workflow
+- Pipeline for IaC
 - Lint and security scan on PR on applications
- 
 - Test ASGs front and back
-    - Front on multiple deploys tasks
-
 - Test external LB connectivity and ports
+- Use variable for execution role in Fargate
+- Use VPC endpoints for internal ECR
 
 
 
@@ -134,6 +134,7 @@ Give credit here.
 - Dynamic subnets creation based on this [Stackoverflow post](https://stackoverflow.com/questions/63309824/for-each-availability-zone-within-an-aws-region/63310014#63310014).
 - We use code for the frontend and backend applications based on this [post](https://dev.to/eelayoubi/building-a-ha-aws-architecture-using-terraform-part-2-30gm).
 - Heavily use of environments to segment variables, as explained in this [document](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment).
+- Inspiration for internal ECRs and other comes from this [article](https://dev.to/danquack/private-fargate-deployment-with-vpc-endpoints-1h0p).
 
 
 
