@@ -14,3 +14,7 @@ output "FRONT_PLACEHOLDER_URL_REGISTRY" {
 output "BACK_PLACEHOLDER_URL_REGISTRY" {
   value     = aws_ecr_repository.docker_repo_backend.repository_url
 }
+
+output "MAIN_ENTRY_BACK" {
+  value     = "${aws_lb.back_end.dns_name}"
+}
