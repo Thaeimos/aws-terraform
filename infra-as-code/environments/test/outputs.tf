@@ -18,3 +18,7 @@ output "BACK_PLACEHOLDER_URL_REGISTRY" {
 output "MAIN_ENTRY_BACK" {
   value     = "${aws_lb.back_end.dns_name}"
 }
+
+output "BACK_ROLE_TASK" {
+  value     = "${aws_ecs_task_definition.back_task_definition.execution_role_arn}"
+}
