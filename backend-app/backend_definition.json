@@ -31,6 +31,7 @@
   "family": "NAME_PLACEHOLDER",
   "memory": "768",
   "networkMode": "awsvpc",
+  "taskRoleArn": "arn:aws:iam::790577265452:role/backend-app-ecs-far",
   "requiresCompatibilities": [ 
       "FARGATE" 
    ]
