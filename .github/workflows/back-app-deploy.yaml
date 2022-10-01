@@ -1,5 +1,5 @@
 
-name: Deploy Backend to ECS EC2
+name: Deploy Backend to ECS Fargate
 
 on:
   push:
@@ -34,7 +34,7 @@ jobs:
           fi
 
   deploy:
-    name: Deploy backend to ECS EC2
+    name: Deploy backend to ECS Fargate
     needs: setup-stage
     runs-on: ubuntu-latest
     environment: 
