@@ -25,7 +25,7 @@ app.get('/init', async (req, res) => {
 
 app.get('/users', async (req, res) => {
   console.log("Received a /users request!");
-  res.send(`Hello world<br/>${JSON.stringify(process.env, null, 2)}`);
+  res.send(`Hello world<br/>`);
   // fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/users`).then(async (response) => {
   //   const data = await response.json();
   //   console.log("Received a /users request!");
