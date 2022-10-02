@@ -41,16 +41,16 @@ List the ready features here:
 - Docker utility with all the commands and tools needed.
     - Use user's defined service account if present. Otherwise resort to default service account.
 - IAM read-only users. Use this [link to connect](https://incode-test.signin.aws.amazon.com/console) to the account with the credentials provided. The code is in this [separated terraform file](/infra-as-code/environments/test/users.tf).
-- ECS with EC2.
-    - Dynamic AMI as you can see [here](/infra-as-code/environments/test/main.tf#L133).
-    - Template substitution for user-data.sh.
+
 - VPC
+    - Manually created instead using modules (Like https://github.com/terraform-aws-modules/terraform-aws-vpc?ref=v3.16.0 for example - Pinned, of course)
     - Name as desired (VPC01).
     - Dynamic public and private subnets creation based on Availability Zones.
     - Route tables to support the subnets.
     - Internet gateway so the frontend components can talk to the exterior.
     - Variable that tags the environment.
     - Create log partitions for applications.
+
 - Frontend application using ECS (EC2) as a public component with:
     - Security groups.
     - Roles.
@@ -58,7 +58,19 @@ List the ready features here:
     - Load balancer.
     - Auto-scalation group.
         - Warm up instances included for rapid scale outs.
+    - Dynamic AMI defined [here](/infra-as-code/environments/test/main.tf#L133).
+    - Template substitution for user-data.sh.
+
+- Backend application using ECS (Fargate) as an application component with:
+    - Security groups.
+    - Roles.
+    - Cloudwatch log group.
+    - Load balancer.
+    - Auto-scalation group.
+    - S3, ECR and Cloudwatch VPC endpoints.
+
 - External endpoint of type "application" for exposing the 3 tier web stack.
+
 - Github pipelines to manage applications
     - Deploy on merge.
     - Pinned versions for external actions.
@@ -121,8 +133,6 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - Test ASGs front and back
 - Test external LB connectivity and ports
 - Use variable for execution role in Fargate
-- Use VPC endpoints for internal ECR
-
 
 
 ## Acknowledgements
@@ -134,7 +144,7 @@ Give credit here.
 - Dynamic subnets creation based on this [Stackoverflow post](https://stackoverflow.com/questions/63309824/for-each-availability-zone-within-an-aws-region/63310014#63310014).
 - We use code for the frontend and backend applications based on this [post](https://dev.to/eelayoubi/building-a-ha-aws-architecture-using-terraform-part-2-30gm).
 - Heavily use of environments to segment variables, as explained in this [document](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment).
-- Inspiration for internal ECRs and other comes from this [article](https://dev.to/danquack/private-fargate-deployment-with-vpc-endpoints-1h0p).
+- Inspiration for internal ECRs and other comes from this [article](https://dev.to/danquack/private-fargate-deployment-with-vpc-endpoints-1h0p) and this [other](https://hands-on.cloud/how-to-launch-aws-fargate-cluster-tasks-in-private-subnets/) as well.
 
 
 
