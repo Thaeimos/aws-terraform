@@ -53,7 +53,7 @@ app.get('/users', async (req, res) => {
 
 // Health check
 app.get('/healthcheck', async (req, res) => {
-  res.send("OK");
+  res.send("OK")
 })
 
 // Custom 404 route not found handler
