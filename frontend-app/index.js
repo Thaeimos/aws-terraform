@@ -22,7 +22,7 @@ app.get('/', async (req, res) => {
 
 app.get('/test-back', async (req, res) => {
   fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/`).then(async (response) => {
-    console.log("Received a /init request!");
+    console.log("Received a /test-back request!");
     const data = await response.json();
     res.send(data)
   }).catch(error => {
