@@ -16,17 +16,18 @@ app.get('/', async (req, res) => {
     res.end()
     res.send()
   }).catch(error => {
-    console.log('There is some error' + error);
+    console.log('There is some error - ' + error);
   });
 })
 
 app.get('/test-back', async (req, res) => {
-  fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/`).then(async (response) => {
+  fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/test-back`).then(async (response) => {
     console.log("Received a /test-back request!");
     const data = await response.json();
+    console.log(`Received a /test-back response: ${data}`);
     res.send(data)
   }).catch(error => {
-    console.log('There is some error' + error);
+    console.log('There is some error - ' + error);
   });
 })
 
@@ -36,7 +37,7 @@ app.get('/init', async (req, res) => {
     const data = await response.json();
     res.send(data)
   }).catch(error => {
-    console.log('There is some error' + error);
+    console.log('There is some error - ' + error);
   });
 })
 
@@ -46,7 +47,7 @@ app.get('/users', async (req, res) => {
     const data = await response.json();
     res.send(data)
   }).catch(error => {
-    console.log('There is some error' + error);
+    console.log('There is some error - ' + error);
   });
 })
 
