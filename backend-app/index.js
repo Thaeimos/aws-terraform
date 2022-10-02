@@ -1,49 +1,53 @@
 import express from 'express';
 import fetch from 'node-fetch';
+import mysql from 'mysql';
 
 const PORT = process.env.PORT || 3000
+// const connection = mysql.createConnection({
+//   host: process.env.RDS_HOSTNAME,
+//   user: process.env.RDS_USERNAME,
+//   password: process.env.RDS_PASSWORD,
+//   port: process.env.RDS_PORT,
+//   db_name: process.env.RDS_DB_NAME
+// });
+// connection.connect()
+// connection.query(`use ${process.env.RDS_DB_NAME};`)
 
 let app = express()
 const APPLICATION_LOAD_BALANCER = process.env.APPLICATION_LOAD_BALANCER;
 
 app.get('/', async (req, res) => {
-  // fetch('http://169.254.169.254/latest/meta-data/hostname').then(async(response) => {
-  //   const hostname = await response.text();
-  //   console.log("Received a / request!");
-  //   res.send(`Hello from ${hostname} <br/>The loadbalancer for the backend is ${process.env.APPLICATION_LOAD_BALANCER}`)
-  // })
-  res.send(`Hello world<br/>${JSON.stringify(process.env, null, 2)}`);
+  res.send({ message: "Hello world from the backend" })
 })
 
 app.get('/init', async (req, res) => {
   console.log("Received a /init request!");
-  fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/init`).then(async (response) => {
-    const data = await response.json();
-    res.send(data)
-  })
+  // connection.query('CREATE TABLE IF NOT EXISTS users (id INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY, lastname VARCHAR(40), firstname VARCHAR(40), email VARCHAR(30));');
+  // connection.query('INSERT INTO users (lastname, firstname, email) VALUES ( "Tony", "Sam", "tonysam@whatever.com"), ( "Doe", "John", "john.doe@whatever.com" );');
+  res.send({ message: "init step done" })
 })
 
 app.get('/users', async (req, res) => {
-  fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/users`).then(async (response) => {
-    const data = await response.json();
-    console.log("Received a /users request!");
-    res.send(data)
-  })
+  console.log("Received a /users request!");
+  // connection.query('SELECT * from users', function (error, results) {
+  //   if (error) throw error;
+  //   res.send(results)
+  // });
 })
 
 app.get('/test-back', async (req, res) => {
   console.log("Received a /test-back request!");
-  res.send("Hello world from the backend");
+  res.send({ message: "Hello world from the backend - Test OK!" })
 })
 
 // Health check
 app.get('/healthcheck', async (req, res) => {
-  res.send("OK")
+  res.send({ message: "OK" })
 })
 
 // Custom 404 route not found handler
 app.use((req, res) => {
-  res.status(404).send('404 not found')
+  res.status(404).send({ message: "404 not found" })
 })
 
 app.listen(PORT, () => {
