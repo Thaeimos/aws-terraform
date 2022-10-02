@@ -15,7 +15,9 @@ app.get('/', async (req, res) => {
     res.write(`The environment value is ${process.env.ENVIRONMENT}\n`)
     res.end()
     res.send()
-  })
+  }).catch(error => {
+    console.log('There is some error' + error);
+  });
 })
 
 app.get('/test-back', async (req, res) => {
@@ -23,7 +25,9 @@ app.get('/test-back', async (req, res) => {
     console.log("Received a /init request!");
     const data = await response.json();
     res.send(data)
-  })
+  }).catch(error => {
+    console.log('There is some error' + error);
+  });
 })
 
 app.get('/init', async (req, res) => {
@@ -31,7 +35,9 @@ app.get('/init', async (req, res) => {
     console.log("Received a /init request!");
     const data = await response.json();
     res.send(data)
-  })
+  }).catch(error => {
+    console.log('There is some error' + error);
+  });
 })
 
 app.get('/users', async (req, res) => {
@@ -39,7 +45,9 @@ app.get('/users', async (req, res) => {
     console.log("Received a /users request!");
     const data = await response.json();
     res.send(data)
-  })
+  }).catch(error => {
+    console.log('There is some error' + error);
+  });
 })
 
 // Custom 404 route not found handler
