@@ -33,7 +33,7 @@ app.get('/users', async (req, res) => {
 
 app.get('/test-back', async (req, res) => {
   console.log("Received a /test-back request!");
-  res.send(`Hello world<br/>`);
+  res.send("Hello world from the backend");
 })
 
 // Health check
