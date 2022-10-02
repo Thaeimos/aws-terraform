@@ -80,7 +80,7 @@ resource "aws_subnet" "priv_subnet" {
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = cidrsubnet(var.main_cidr_block, 8, each.key + length(local.az_names))
   availability_zone       = local.az_names[each.key]
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = {
     Name = "private_subnet_${local.az_names[each.key]}"
@@ -105,6 +105,49 @@ resource "aws_route_table_association" "route_table_association" {
   for_each       = {for idx, az_name in local.az_names: idx => az_name}
   subnet_id      = aws_subnet.pub_subnet[each.key].id
   route_table_id = aws_route_table.public.id
+}
+
+# Elastic IPs and NAT Gateways
+resource "aws_eip" "nat_ip" {
+  for_each    = {for idx, az_name in local.az_names: idx => az_name}
+  depends_on  = [aws_internet_gateway.internet_gateway]
+  vpc         = true
+
+  tags = {
+    Name        = "EIP-${each.value}"
+  }
+}
+
+resource "aws_nat_gateway" "nat_gateway" {
+  for_each      = {for idx, az_name in local.az_names: idx => az_name}
+  allocation_id = aws_eip.nat_ip[each.key].id
+  subnet_id     = aws_subnet.pub_subnet[each.key].id
+  depends_on    = [aws_internet_gateway.internet_gateway]
+
+  tags = {
+    Name        = "NAT-${each.value}"
+  }
+}
+
+# Private routes
+resource "aws_route_table" "private" {
+  for_each  = {for idx, az_name in local.az_names: idx => az_name}
+  vpc_id    = aws_vpc.vpc.id
+
+  route {
+      cidr_block = "0.0.0.0/0"
+      nat_gateway_id = aws_nat_gateway.nat_gateway[each.key].id
+  }
+
+  tags = {
+    Name = "private-route-${each.value}"
+  }
+}
+
+resource "aws_route_table_association" "route_table_association_priv" {
+  for_each       = {for idx, az_name in local.az_names: idx => az_name}
+  subnet_id      = aws_subnet.priv_subnet[each.key].id
+  route_table_id = aws_route_table.private[each.key].id
 }
 
 
@@ -190,14 +233,6 @@ resource "aws_security_group" "presentation_tier" {
 
   ingress {
     description     = "HTTP from anywhere"
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
-    security_groups = [aws_security_group.alb_presentation_tier.id]
-  }
-
-  ingress {
-    description     = "HTTP from anywhere"
     from_port       = 3000
     to_port         = 3000
     protocol        = "tcp"
@@ -272,6 +307,25 @@ resource "aws_ecr_repository" "docker_repo_frontend" {
   name  = var.frontend_name
 }
 
+resource "aws_ecr_lifecycle_policy" "docker_repo_frontend" {
+  repository = aws_ecr_repository.docker_repo_frontend.name
+
+  policy = jsonencode({
+    rules = [{
+      rulePriority = 1
+      description  = "keep last 10 images"
+      action       = {
+        type = "expire"
+      }
+      selection     = {
+        tagStatus   = "any"
+        countType   = "imageCountMoreThan"
+        countNumber = 10
+      }
+    }]
+  })
+}
+
 # ECS
 resource "aws_ecs_cluster" "ecs_cluster_frontend" {
   name  = var.frontend_name
@@ -315,10 +369,6 @@ resource "aws_ecs_service" "frontend_application" {
     weight            = 100
     base              = 0
   }
-
-  # lifecycle {
-  #   ignore_changes = [desired_count]
-  # }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.front_end.arn
@@ -499,25 +549,90 @@ data "aws_iam_policy_document" "ecs_agent_back" {
 
     principals {
       type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
+      identifiers = ["ecs.amazonaws.com", "ecs-tasks.amazonaws.com"]
     }
   }
 }
 
-resource "aws_iam_role" "ecs_agent_back" {
-  name               = var.backend_name
+resource "aws_iam_policy" "fargate_execution" {
+  name   = "fargate_execution_policy"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+        "Effect": "Allow",
+        "Action": [
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:BatchGetImage",
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:GetAuthorizationToken",
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+        ],
+        "Resource": "*"
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "ssm:GetParameters",
+            "secretsmanager:GetSecretValue",
+            "kms:Decrypt"
+        ],
+        "Resource": [
+            "*"
+        ]
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_policy" "fargate_task" {
+  name   = "fargate_task_policy"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+        "Effect": "Allow",
+        "Action": [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+        ],
+        "Resource": "*"
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "servicediscovery:ListServices",
+            "servicediscovery:ListInstances"
+        ],
+        "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role" "fargate_execution" {
+  name               = "back-fargate-execution-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_agent_back.json
 }
 
-
-resource "aws_iam_role_policy_attachment" "ecs_agent_back" {
-  role       = aws_iam_role.ecs_agent_back.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+resource "aws_iam_role" "fargate_task" {
+  name               = "back-fargate-task-role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_agent_back.json
 }
-
-resource "aws_iam_instance_profile" "ecs_agent_back" {
-  name = var.backend_name
-  role = aws_iam_role.ecs_agent_back.name
+resource "aws_iam_role_policy_attachment" "fargate-execution" {
+  role       = aws_iam_role.fargate_execution.name
+  policy_arn = aws_iam_policy.fargate_execution.arn
+}
+resource "aws_iam_role_policy_attachment" "fargate-task" {
+  role       = aws_iam_role.fargate_task.name
+  policy_arn = aws_iam_policy.fargate_task.arn
 }
 
 # ECR
@@ -525,9 +640,40 @@ resource "aws_ecr_repository" "docker_repo_backend" {
   name  = var.backend_name
 }
 
+resource "aws_ecr_lifecycle_policy" "docker_repo_backend" {
+  repository = aws_ecr_repository.docker_repo_backend.name
+
+  policy = jsonencode({
+    rules = [{
+      rulePriority = 1
+      description  = "keep last 10 images"
+      action       = {
+        type = "expire"
+      }
+      selection     = {
+        tagStatus   = "any"
+        countType   = "imageCountMoreThan"
+        countNumber = 10
+      }
+    }]
+  })
+}
+
 # ECS
 resource "aws_ecs_cluster" "ecs_cluster_backend" {
   name  = var.backend_name
+}
+
+resource "aws_ecs_cluster_capacity_providers" "example" {
+  cluster_name = aws_ecs_cluster.ecs_cluster_backend.name
+
+  capacity_providers = ["FARGATE"]
+
+  default_capacity_provider_strategy {
+    base              = 1
+    weight            = 100
+    capacity_provider = "FARGATE"
+  }
 }
 
 # Cloudwatch log group
@@ -545,27 +691,29 @@ resource "aws_cloudwatch_log_group" "log_ecs_backend" {
 data "template_file" "back_task_definition_template" {
   template = file("task_definition.json.tpl")
   vars = {
-    REPOSITORY_URL = replace(aws_ecr_repository.docker_repo_backend.repository_url, "https://", "")
-    ENV_VAR = var.environment
-    CONTAINER_NAME = var.backend_name
+    REPOSITORY_URL  = replace(aws_ecr_repository.docker_repo_backend.repository_url, "https://", "")
+    ENV_VAR         = var.environment
+    CONTAINER_NAME  = var.backend_name
   }
 }
 
 resource "aws_ecs_task_definition" "back_task_definition" {
-  family                     = var.backend_name
-  container_definitions     = data.template_file.back_task_definition_template.rendered
-  requires_compatibilities  = ["FARGATE"]
-  network_mode              = "awsvpc"
-  cpu                       = "256"     # Need CPU and memory at the task level, not container level
-  memory                    = "512"
-  execution_role_arn        = "${aws_iam_role.ecs_agent_back.arn}"
+  family                      = var.backend_name
+  container_definitions       = data.template_file.back_task_definition_template.rendered
+  requires_compatibilities    = ["FARGATE"]
+  network_mode                = "awsvpc"
+  cpu                         = "256"     # Need CPU and memory at the task level, not container level
+  memory                      = "512"
+  execution_role_arn          = aws_iam_role.fargate_execution.arn
+  task_role_arn               = aws_iam_role.fargate_task.arn
 }
 
 resource "aws_ecs_service" "backend_application" {
-  name            = var.backend_name
-  cluster         = aws_ecs_cluster.ecs_cluster_backend.id
-  task_definition = aws_ecs_task_definition.back_task_definition.arn
-  desired_count   = 2
+  name              = var.backend_name
+  cluster           = aws_ecs_cluster.ecs_cluster_backend.id
+  task_definition   = aws_ecs_task_definition.back_task_definition.arn
+  desired_count     = 2
+  launch_type       = "FARGATE"
 
   load_balancer {
     target_group_arn = aws_lb_target_group.back_end.arn
@@ -574,6 +722,84 @@ resource "aws_ecs_service" "backend_application" {
   }
 
   network_configuration {
-    subnets          = values(aws_subnet.priv_subnet)[*].id
+    subnets           = values(aws_subnet.priv_subnet)[*].id
+    # security_groups   = [aws_security_group.ecs_task.id]
+  }
+}
+
+# VPC internal endpoints for Fargate
+resource "aws_security_group" "vpc_endpoint" {
+  name   = "vpc_endpoint_sg"
+  vpc_id = aws_vpc.vpc.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.vpc.cidr_block]
+  }
+
+  tags = {
+    Environment = var.environment
+  }
+}
+
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = "com.amazonaws.${var.region}.s3" # ???
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = values(aws_route_table.private)[*].id
+
+  tags = {
+    Name        = "s3-endpoint"
+    Environment = var.environment
+  }
+}
+
+resource "aws_vpc_endpoint" "dkr" {
+  vpc_id              = aws_vpc.vpc.id
+  private_dns_enabled = true
+  service_name        = "com.amazonaws.${var.region}.ecr.dkr"
+  vpc_endpoint_type   = "Interface"
+  security_group_ids = [
+    aws_security_group.vpc_endpoint.id,
+  ]
+  subnet_ids = values(aws_subnet.priv_subnet)[*].id
+
+  tags = {
+    Name        = "dkr-endpoint"
+    Environment = var.environment
+  }
+}
+
+resource "aws_vpc_endpoint" "dkr_api" {
+  vpc_id              = aws_vpc.vpc.id
+  private_dns_enabled = true
+  service_name        = "com.amazonaws.${var.region}.ecr.api"
+  vpc_endpoint_type   = "Interface"
+  security_group_ids = [
+    aws_security_group.vpc_endpoint.id,
+  ]
+  subnet_ids = values(aws_subnet.priv_subnet)[*].id
+
+  tags = {
+    Name        = "dkr-api-endpoint"
+    Environment = var.environment
+  }
+}
+
+resource "aws_vpc_endpoint" "logs" {
+  vpc_id              = aws_vpc.vpc.id
+  private_dns_enabled = true
+  service_name        = "com.amazonaws.${var.region}.logs"
+  vpc_endpoint_type   = "Interface"
+  security_group_ids = [
+    aws_security_group.vpc_endpoint.id,
+  ]
+  subnet_ids = values(aws_subnet.priv_subnet)[*].id
+
+  tags = {
+    Name        = "logs-endpoint"
+    Environment = var.environment
   }
 }
