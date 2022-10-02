@@ -18,6 +18,14 @@ app.get('/', async (req, res) => {
   })
 })
 
+app.get('/test-back', async (req, res) => {
+  fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/`).then(async (response) => {
+    console.log("Received a /init request!");
+    const data = await response.json();
+    res.send(data)
+  })
+})
+
 app.get('/init', async (req, res) => {
   fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/init`).then(async (response) => {
     console.log("Received a /init request!");
