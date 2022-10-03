@@ -11,6 +11,12 @@ app.get('/', async (req, res) => {
 
 app.get('/init', async (req, res) => {
   console.log("Received a /init request!");
+  console.log("Debug secrest:");
+  console.log(`Value of Hostname is ${process.env.RDS_HOSTNAME}`);
+  console.log(`Value of Username is ${process.env.RDS_USERNAME}`);
+  console.log(`Value of Password is ${process.env.RDS_PASSWORD}`);
+  console.log(`Value of Port is ${process.env.RDS_PORT}`);
+  console.log(`Value of DB Name is ${process.env.RDS_DB_NAME}`);
   try {
     const connection = mysql.createConnection({
       host: process.env.RDS_HOSTNAME,
@@ -50,7 +56,7 @@ app.get('/users', async (req, res) => {
   } catch (error) {
     console.log(`Error creating the DB connection: ${error}`);
   }
-  
+
   connection.query('SELECT * from users', function (error, results) {
     if (error) throw error;
     res.send(results)
