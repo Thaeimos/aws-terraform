@@ -31,5 +31,5 @@ output "BACK_EXEC_ROLE_TASK" {
 }
 
 output "BACK_DB_SECRET_GROUP" {
-  value     = "${aws_ecs_task_definition.back_task_definition.execution_role_arn}"
+  value     = "${aws_secretsmanager_secret.secretmasterDB.arn}"
 }
