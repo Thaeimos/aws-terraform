@@ -2,6 +2,7 @@ import express from 'express';
 import mysql from 'mysql';
 
 const PORT = process.env.PORT || 3000
+
 try {
   const connection = mysql.createConnection({
     host: process.env.RDS_HOSTNAME,
@@ -28,8 +29,9 @@ app.get('/', async (req, res) => {
 
 app.get('/init', async (req, res) => {
   console.log("Received a /init request!");
+
   try {
-    connection.query(`use ${process.env.RDS_DB_NAME};`)
+    // connection.query(`use ${process.env.RDS_DB_NAME};`)
     console.log("POST select DB");
 
     connection.query('SELECT 1 + 1 AS solution', (err, rows, fields) => {
