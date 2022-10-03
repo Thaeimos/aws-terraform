@@ -78,6 +78,12 @@ List the ready features here:
 
 - External endpoint of type "application" for exposing the 3 tier web stack.
 
+- We've have added 5 alarms to monitor the application. Given the small number of alarms, we tend to focus on general behaviour of the whole stack instead of specific parts:
+    - "target_response_time" to monitor the response time of the application. Useful if you deploy a new version and see it's more sluggish than the previous one. Also contributes to user satisfaction.
+    - "error_rate" to monitor the number of bad responses we give to customers vs the total of responses. Generic workhorse for every web application monitoring.
+    - "target_healthy_count_applications" to monitor the number of unhealthy tasks in the EC2 or Fargate cluster. We monitor both clusters in the same alarm. Useful to check if there are problems in any of the workloads. This is more specific than the previous two alerts.
+    - "rds_cpu_utilization_too_high" and "rds_disk_free_storage_space_too_low" to monitor CPU and free space in our RDS database. I've honestly think this is the bare minimum for database monitoring and I feel nervous about having so few alarms for the database stack.
+
 - Github pipelines to manage applications
     - Deploy on merge.
     - Pinned versions for external actions.
@@ -114,7 +120,6 @@ Project is: _Actively working_.
 ## Room for Improvement
 Include areas you believe need improvement / could be improved. Also add TODOs for future development.
 
-- Select and add five CloudWatch alarms related to the implementation. We require explanation about the reasons of the selected alarms.
 - Test then prod
 - Github pipelines
     - Docker scan in pipeline
@@ -123,8 +128,10 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - Use spot instances for EC2 ECS.
 - Pin the AMI for ECS and provide information.
 - SSL
-    - Create certificates and attach them
-    - Redirect http to https
+    - Create certificates and add them into AWS. We need to verify ownership of domain.
+    - Create endpoint and attach the certificate.
+    - Redirect http to https.
+    - Create proper DNS name that points to the ELB DNS name.
 - Docker multistage
 - Cache in pipelines for docker
 - Pipeline for IaC
