@@ -41,7 +41,8 @@ data "aws_secretsmanager_secret_version" "db_creds" {
   depends_on = [aws_secretsmanager_secret_version.sversion]
 }
  
-# After importing the secrets storing into Locals
-locals {
-  db_creds = jsondecode(data.aws_secretsmanager_secret_version.db_creds.secret_string)
-}
+# # Cannot due to circular dependency
+# # After importing the secrets storing into Locals
+# locals {
+#   db_creds = jsondecode(data.aws_secretsmanager_secret_version.db_creds.secret_string)
+# }
