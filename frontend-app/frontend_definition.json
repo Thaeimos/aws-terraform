@@ -34,6 +34,7 @@
   "cpu": "768",
   "family": "NAME_PLACEHOLDER",
   "memory": "768",
+  "executionRoleArn": "arn:aws:iam::790577265452:role/back-fargate-execution-role",
   "requiresCompatibilities": [ 
       "EC2" 
    ]
