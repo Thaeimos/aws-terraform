@@ -87,7 +87,7 @@ app.get('/users', async (req, res) => {
 
     connection.query('SELECT * from users', function (error, results) {
       if (error) throw error;
-      res.send({ message: `${results}` })
+      res.json(results)
     });
   } catch (error) {
     console.log(`Error doing the querying for users: ${error}`);
