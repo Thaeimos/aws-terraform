@@ -3,24 +3,24 @@ import mysql from 'mysql';
 
 const PORT = process.env.PORT || 3000
 
-try {
-  const connection = mysql.createConnection({
-    host: process.env.RDS_HOSTNAME,
-    user: process.env.RDS_USERNAME,
-    password: process.env.RDS_PASSWORD,
-    port: process.env.RDS_PORT,
-    database: process.env.RDS_DB_NAME
-  });
-  console.log("POST create connection");
+// try {
+//   let connection = mysql.createConnection({
+//     host: process.env.RDS_HOSTNAME,
+//     user: process.env.RDS_USERNAME,
+//     password: process.env.RDS_PASSWORD,
+//     port: process.env.RDS_PORT,
+//     database: process.env.RDS_DB_NAME
+//   });
+//   console.log("POST create connection");
 
-  connection.connect(error => {
-    if (error) throw error;
-    console.log("Successfully connected to the database.");
-  });
+//   connection.connect(error => {
+//     if (error) throw error;
+//     console.log("Successfully connected to the database.");
+//   });
 
-} catch (error) {
-  console.log(`Error creating the connection to the DB: ${error}`);
-}
+// } catch (error) {
+//   console.log(`Error creating the connection to the DB: ${error}`);
+// }
 
 let app = express()
 
@@ -32,21 +32,46 @@ app.get('/init', async (req, res) => {
   console.log("Received a /init request!");
 
   try {
-    console.log("PRE select DB");
-    connection.query(`use ${process.env.RDS_DB_NAME};`)
-    console.log("POST select DB");
+    let connection = mysql.createConnection({
+      host: process.env.RDS_HOSTNAME,
+      user: process.env.RDS_USERNAME,
+      password: process.env.RDS_PASSWORD,
+      port: process.env.RDS_PORT,
+      database: process.env.RDS_DB_NAME
+    });
+    console.log("POST create connection");
+  
+    connection.connect(error => {
+      if (error) throw error;
+      console.log("Successfully connected to the database.");
+    });
 
-    connection.query('SELECT 1 + 1 AS solution', (err, rows, fields) => {
-      if (err) throw err
-    
-      console.log('The solution is: ', rows[0].solution)
-    })
+    console.log("PRE select DB");
+    console.log("POST select DB");
+    let createTodos = `CREATE TABLE IF NOT EXISTS users (
+        id INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+        lastname VARCHAR(40), 
+        firstname VARCHAR(40), 
+        email VARCHAR(30)
+      );`;
+
+    connection.query(createTodos, function(err, results, fields) {
+      if (err) {
+        console.log(err.message);
+      }
+    });
     console.log("POST query");
 
-    connection.query('CREATE TABLE IF NOT EXISTS users (id INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY, lastname VARCHAR(40), firstname VARCHAR(40), email VARCHAR(30));');
-    console.log("POST query 01");
-    connection.query('INSERT INTO users (lastname, firstname, email) VALUES ( "Tony", "Sam", "tonysam@whatever.com"), ( "Doe", "John", "john.doe@whatever.com" );');
-    console.log("POST query 02");
+    connection.end(function(err) {
+      if (err) {
+        return console.log(err.message);
+      }
+    });
+
+    // connection.query('CREATE TABLE IF NOT EXISTS users (id INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY, lastname VARCHAR(40), firstname VARCHAR(40), email VARCHAR(30));');
+    // console.log("POST query 01");
+    // connection.query('INSERT INTO users (lastname, firstname, email) VALUES ( "Tony", "Sam", "tonysam@whatever.com"), ( "Doe", "John", "john.doe@whatever.com" );');
+    // console.log("POST query 02");
     res.send({ message: "init step done" })
   } catch (error) {
       console.log(`Error doing the init DB: ${error}`);
