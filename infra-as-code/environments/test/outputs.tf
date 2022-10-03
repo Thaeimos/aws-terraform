@@ -14,6 +14,10 @@ output "MAIN_ENTRY_BACK" {
   value     = "${aws_lb.back_end.dns_name}"
 }
 
-output "BACK_ROLE_TASK" {
+output "FRONT_EXEC_ROLE_TASK" {
+  value     = "${aws_ecs_task_definition.frontend_application.execution_role_arn}"
+}
+
+output "BACK_EXEC_ROLE_TASK" {
   value     = "${aws_ecs_task_definition.back_task_definition.execution_role_arn}"
 }
