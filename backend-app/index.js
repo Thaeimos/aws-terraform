@@ -17,6 +17,7 @@ try {
     if (error) throw error;
     console.log("Successfully connected to the database.");
   });
+
 } catch (error) {
   console.log(`Error creating the connection to the DB: ${error}`);
 }
@@ -31,7 +32,8 @@ app.get('/init', async (req, res) => {
   console.log("Received a /init request!");
 
   try {
-    // connection.query(`use ${process.env.RDS_DB_NAME};`)
+    console.log("PRE select DB");
+    connection.query(`use ${process.env.RDS_DB_NAME};`)
     console.log("POST select DB");
 
     connection.query('SELECT 1 + 1 AS solution', (err, rows, fields) => {
