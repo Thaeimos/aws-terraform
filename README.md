@@ -37,6 +37,7 @@ The idea is to create a scalable 3 tier web application with a database in the e
 List the ready features here:
 
 - Infrastructure as code. Multiple environments to support different infrastructure choices.
+    - No usage of count. We favour "for_each" instead because of [this reason](https://medium.com/@business_99069/terraform-count-vs-for-each-b7ada2c0b186).
 - Monorepo. We have one folder for each application (Frontend and backend) and one folder for the infrastructure creation.
 - Docker utility with all the commands and tools needed.
     - Use user's defined service account if present. Otherwise resort to default service account.
@@ -58,7 +59,7 @@ List the ready features here:
     - Load balancer.
     - Auto-scalation group.
         - Warm up instances included for rapid scale outs.
-    - Dynamic AMI defined [here](/infra-as-code/environments/test/main.tf#L133).
+    - Dynamic AMI defined.
     - Template substitution for EC2 instances in user-data.sh.
     - Variable substitution using placeholders.
     - Use AWS Secrets Manager to put sensitive data in the templates and in the task.
