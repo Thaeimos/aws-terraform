@@ -20,7 +20,11 @@ resource "aws_secretsmanager_secret_version" "sversion" {
   secret_string = <<EOF
    {
     "username": "${var.db_username}",
-    "password": "${random_password.password.result}"
+    "password_random": "${random_password.password.result}",
+    "password": "${var.db_password}",
+    "hostname": "${aws_db_instance.rds_demo.address}",
+    "port": "${aws_db_instance.rds_demo.port}",
+    "database": "${aws_db_instance.rds_demo.db_name}"
    }
 EOF
 }
