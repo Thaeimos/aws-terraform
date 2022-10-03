@@ -47,3 +47,31 @@ variable "db_password" {
   description = "Password for the database user."
   sensitive   = true
 }
+
+variable "time_response_thresholds" {
+  default = {
+    period              = "60" //Seconds
+    statistic           = "Average"
+    threshold           = "5" //Seconds
+ }
+}
+
+variable "fiveXXs_thresholds" {
+  default = {
+    period              = "60" //Seconds
+    statistic           = "Average"
+    threshold           = "1" //Count
+ }
+}
+
+variable "evaluation_period" {
+    type        = string
+    description = "The evaluation period over which to use when triggering alarms."
+    default     = "2"
+}
+
+variable "statistic_period" {
+    type        = string
+    description = "The number of seconds that make each statistic period."
+    default     = "60"
+}
