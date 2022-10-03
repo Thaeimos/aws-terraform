@@ -34,18 +34,6 @@
             "name": "RDS_PASSWORD",
             "valueFrom": "BACK_DB_SECRET_PLACEHOLDER:password::"
          }
-         // {
-         //    "name": "RDS_HOSTNAME",
-         //    "valueFrom": "BACK_DB_SECRET_PLACEHOLDER:hostname::"
-         // },
-         // {
-         //    "name": "RDS_PORT",
-         //    "valueFrom": "BACK_DB_SECRET_PLACEHOLDER:port::"
-         // },
-         // {
-         //    "name": "RDS_DB_NAME",
-         //    "valueFrom": "BACK_DB_SECRET_PLACEHOLDER:database::"
-         // }
       ]
      }
   ],
