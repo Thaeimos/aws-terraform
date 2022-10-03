@@ -8,7 +8,7 @@ Terraform AWS demo using ECS
 * [General Info](#general-information)
 * [Technologies Used](#technologies-used)
 * [Features](#features)
-* [Screenshots](#screenshots)
+* [Screenshots](#architectural-diagram)
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Usage](#usage)
@@ -69,7 +69,7 @@ List the ready features here:
     - Roles.
     - Cloudwatch log group.
     - Load balancer.
-    - Auto-scalation group.
+    - Auto-scalation application target.
     - S3, ECR and Cloudwatch VPC endpoints.
     - Healthcheck separated endpoint for target group.
     - Variable substitution using placeholders.
@@ -113,10 +113,7 @@ Project is: _Actively working_.
 ## Room for Improvement
 Include areas you believe need improvement / could be improved. Also add TODOs for future development.
 
-- Provision an application using ECS with EC2 and Fargate with the following elements: public component, private component, database component and all the required elements (security groups, roles, log groups, etc). The components must we interconnected, so for example the public layer must connect to the application layer and the application layer must connect to the database layer. A load balancer with target and auto-scalation groups must be utilized for each layer.
 - Select and add five CloudWatch alarms related to the implementation. We require explanation about the reasons of the selected alarms.
-- A diagram with the implementation is required.
-- Security
 - Test then prod
 - Github pipelines
     - Docker scan in pipeline
@@ -131,10 +128,6 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - Cache in pipelines for docker
 - Pipeline for IaC
 - Lint and security scan on PR on applications
-- Test ASGs front and back
-- Test external LB connectivity and ports
-- Test read only can see secrets
-- Make variables random?
 
 
 ## Acknowledgements
