@@ -2,6 +2,23 @@ import express from 'express';
 import mysql from 'mysql';
 
 const PORT = process.env.PORT || 3000
+try {
+  const connection = mysql.createConnection({
+    host: process.env.RDS_HOSTNAME,
+    user: process.env.RDS_USERNAME,
+    password: process.env.RDS_PASSWORD,
+    port: process.env.RDS_PORT,
+    db_name: process.env.RDS_DB_NAME
+  });
+  console.log("POST create connection");
+
+  connection.connect(error => {
+    if (error) throw error;
+    console.log("Successfully connected to the database.");
+  });
+} catch (error) {
+  console.log(`Error creating the connection to the DB: ${error}`);
+}
 
 let app = express()
 
@@ -11,26 +28,12 @@ app.get('/', async (req, res) => {
 
 app.get('/init', async (req, res) => {
   console.log("Received a /init request!");
-  console.log("Debug secrest:");
-  console.log(`Value of Hostname is ${process.env.RDS_HOSTNAME}`);
-  console.log(`Value of Username is ${process.env.RDS_USERNAME}`);
-  console.log(`Value of Password is ${process.env.RDS_PASSWORD}`);
-  console.log(`Value of Port is ${process.env.RDS_PORT}`);
-  console.log(`Value of DB Name is ${process.env.RDS_DB_NAME}`);
   try {
-    const connection = mysql.createConnection({
-      host: process.env.RDS_HOSTNAME,
-      user: process.env.RDS_USERNAME,
-      password: process.env.RDS_PASSWORD,
-      port: process.env.RDS_PORT,
-      db_name: process.env.RDS_DB_NAME
-    });
-    console.log("POST create connection");
-    connection.connect(error => {
-      if (error) throw error;
-      console.log("Successfully connected to the database.");
-    });
-    console.log("POST connect");
+    connection.query('SELECT 1 + 1 AS solution', (err, rows, fields) => {
+      if (err) throw err
+    
+      console.log('The solution is: ', rows[0].solution)
+    })
     connection.query(`use ${process.env.RDS_DB_NAME};`)
     console.log("POST query");
 
@@ -40,30 +43,17 @@ app.get('/init', async (req, res) => {
     console.log("POST query 02");
     res.send({ message: "init step done" })
   } catch (error) {
-    console.log(`Error doing the init DB: ${error}`);
-    res.send({ message: "init step not OK :(" })
+      console.log(`Error doing the init DB: ${error}`);
+      res.send({ message: "init step not OK :(" })
   }
 })
 
 app.get('/users', async (req, res) => {
   console.log("Received a /users request!");
-  try {
-    const connection = mysql.createConnection({
-      host: process.env.RDS_HOSTNAME,
-      user: process.env.RDS_USERNAME,
-      password: process.env.RDS_PASSWORD,
-      port: process.env.RDS_PORT,
-      db_name: process.env.RDS_DB_NAME
-    });
-    connection.connect()
-    connection.query(`use ${process.env.RDS_DB_NAME};`)
-  } catch (error) {
-    console.log(`Error creating the DB connection: ${error}`);
-  }
 
   connection.query('SELECT * from users', function (error, results) {
     if (error) throw error;
-    res.send(results)
+    res.send({ message: `${results}` })
   });
 })
 
