@@ -148,7 +148,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_cpu_utilization_too_high" {
     }
 }
 
-resource "aws_cloudwatch_metric_alarm" "disk_free_storage_space_too_low" {
+resource "aws_cloudwatch_metric_alarm" "rds_disk_free_storage_space_too_low" {
     alarm_name          = "rds-lowFreeStorageSpace"
     comparison_operator = "LessThanThreshold"
     evaluation_periods  = var.evaluation_period
