@@ -8,7 +8,7 @@ try {
     user: process.env.RDS_USERNAME,
     password: process.env.RDS_PASSWORD,
     port: process.env.RDS_PORT,
-    db_name: process.env.RDS_DB_NAME
+    database: process.env.RDS_DB_NAME
   });
   console.log("POST create connection");
 
