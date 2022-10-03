@@ -341,6 +341,10 @@ resource "aws_ecs_service" "frontend_application" {
     container_name   = var.frontend_name
     container_port   = 3000
   }
+
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
 }
 
 # Autoscaling group
@@ -764,6 +768,10 @@ resource "aws_ecs_service" "backend_application" {
     subnets           = values(aws_subnet.priv_subnet)[*].id
     security_groups   = [aws_security_group.ecs_task_back.id]
   }
+
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
 }
 
 # Auto scaling
@@ -888,6 +896,17 @@ resource "aws_vpc_endpoint" "logs" {
   }
 }
 
+resource "aws_vpc_endpoint" "secretsmanager" {
+  vpc_id              = aws_vpc.vpc.id
+  service_name        = "com.amazonaws.${var.region}.secretsmanager"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+  subnet_ids          = values(aws_subnet.priv_subnet)[*].id
+	security_group_ids = [
+    aws_security_group.vpc_endpoint.id,
+  ]
+}
+
 
 #####################################################################
 # Database stack
@@ -931,7 +950,7 @@ resource "aws_security_group" "rds_sg" {
 
 resource "aws_db_parameter_group" "rds_param" {
   name   = var.name
-  family = "mariadb10.6"
+  family = "mysql8.0"
 
   parameter {
     name  = "max_allowed_packet"
@@ -943,8 +962,8 @@ resource "aws_db_instance" "rds_demo" {
   identifier                = var.name
   instance_class            = "db.t3.micro"
   allocated_storage         = 5 # We should use 100 for more IOPs but this is a demo...
-  engine                    = "mariadb"
-  engine_version            = "10.6.8"
+  engine                    = "mysql"
+  engine_version            = "8.0.28"
   username                  = var.db_username
   password                  = var.db_password
   db_subnet_group_name      = aws_db_subnet_group.rds_subnet_group.name
@@ -955,9 +974,9 @@ resource "aws_db_instance" "rds_demo" {
   db_name                   = "mydatabase"
   multi_az                  = "true"
   storage_type              = "gp2"
-  backup_retention_period   = 30
-  final_snapshot_identifier = "mariadb-final-snapshot"
+  backup_retention_period   = 6
+  final_snapshot_identifier = "mysql-final-snapshot"
   tags = {
-    Name = "mariadb-instance"
+    Name = "mysql-instance"
   }
 }
