@@ -59,7 +59,10 @@ List the ready features here:
     - Auto-scalation group.
         - Warm up instances included for rapid scale outs.
     - Dynamic AMI defined [here](/infra-as-code/environments/test/main.tf#L133).
-    - Template substitution for user-data.sh.
+    - Template substitution for EC2 instances in user-data.sh.
+    - Variable substitution using placeholders.
+    - Use AWS Secrets Manager to put sensitive data in the templates and in the task.
+    - Healthcheck separated endpoint for target group.
 
 - Backend application using ECS (Fargate) as an application component with:
     - Security groups.
@@ -68,6 +71,9 @@ List the ready features here:
     - Load balancer.
     - Auto-scalation group.
     - S3, ECR and Cloudwatch VPC endpoints.
+    - Healthcheck separated endpoint for target group.
+    - Variable substitution using placeholders.
+    - Use AWS Secrets Manager to put sensitive data in the templates and in the task.
 
 - External endpoint of type "application" for exposing the 3 tier web stack.
 
@@ -78,6 +84,7 @@ List the ready features here:
         - We have different set of variables that, depending on the branch you are merging to, will have different values. Very useful when you wanna have a different set of credentials, for example, for your production and development environments.
         - We can create the environment and the secrets using the [instructions provided](/utilities/github-repo-setup/).
     - Variable substitution for the ECS tasks using secrets. Better centralized secret and variables storage and a lot of reusability.
+
 - Documentation
 
 
@@ -132,7 +139,8 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 - Lint and security scan on PR on applications
 - Test ASGs front and back
 - Test external LB connectivity and ports
-- Use variable for execution role in Fargate
+- Test read only can see secrets
+- Make variables random?
 
 
 ## Acknowledgements
