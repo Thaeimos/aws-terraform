@@ -3,20 +3,6 @@ import mysql from 'mysql';
 
 const PORT = process.env.PORT || 3000
 
-try {
-  const connection = mysql.createConnection({
-    host: process.env.RDS_HOSTNAME,
-    user: process.env.RDS_USERNAME,
-    password: process.env.RDS_PASSWORD,
-    port: process.env.RDS_PORT,
-    db_name: process.env.RDS_DB_NAME
-  });
-  connection.connect()
-  connection.query(`use ${process.env.RDS_DB_NAME};`)
-} catch (error) {
-  console.log(`Error creating the DB connection: ${error}`);
-}
-
 let app = express()
 
 app.get('/', async (req, res) => {
@@ -25,6 +11,20 @@ app.get('/', async (req, res) => {
 
 app.get('/init', async (req, res) => {
   console.log("Received a /init request!");
+  try {
+    const connection = mysql.createConnection({
+      host: process.env.RDS_HOSTNAME,
+      user: process.env.RDS_USERNAME,
+      password: process.env.RDS_PASSWORD,
+      port: process.env.RDS_PORT,
+      db_name: process.env.RDS_DB_NAME
+    });
+    connection.connect()
+    connection.query(`use ${process.env.RDS_DB_NAME};`)
+  } catch (error) {
+    console.log(`Error creating the DB connection: ${error}`);
+  }
+
   try {
     connection.query('CREATE TABLE IF NOT EXISTS users (id INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY, lastname VARCHAR(40), firstname VARCHAR(40), email VARCHAR(30));');
     connection.query('INSERT INTO users (lastname, firstname, email) VALUES ( "Tony", "Sam", "tonysam@whatever.com"), ( "Doe", "John", "john.doe@whatever.com" );');
@@ -37,6 +37,20 @@ app.get('/init', async (req, res) => {
 
 app.get('/users', async (req, res) => {
   console.log("Received a /users request!");
+  try {
+    const connection = mysql.createConnection({
+      host: process.env.RDS_HOSTNAME,
+      user: process.env.RDS_USERNAME,
+      password: process.env.RDS_PASSWORD,
+      port: process.env.RDS_PORT,
+      db_name: process.env.RDS_DB_NAME
+    });
+    connection.connect()
+    connection.query(`use ${process.env.RDS_DB_NAME};`)
+  } catch (error) {
+    console.log(`Error creating the DB connection: ${error}`);
+  }
+  
   connection.query('SELECT * from users', function (error, results) {
     if (error) throw error;
     res.send(results)
