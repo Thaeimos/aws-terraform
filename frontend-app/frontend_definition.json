@@ -24,7 +24,11 @@
               "name": "Environment",
               "value": "DEPRECATED"
           }
-        ]
+        ],
+        "secrets": [{
+         "name": "Test_v",
+         "valueFrom": "arn:aws:secretsmanager:eu-west-2:790577265452:secret:db-credentials-nBqpSq:username::"
+       }]
      }
   ],
   "cpu": "768",
