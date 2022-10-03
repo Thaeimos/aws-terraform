@@ -30,13 +30,11 @@ app.get('/init', async (req, res) => {
     console.log("POST connect");
     connection.query(`use ${process.env.RDS_DB_NAME};`)
     console.log("POST query");
-  } catch (error) {
-    console.log(`Error creating the DB connection: ${error}`);
-  }
 
-  try {
     connection.query('CREATE TABLE IF NOT EXISTS users (id INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY, lastname VARCHAR(40), firstname VARCHAR(40), email VARCHAR(30));');
+    console.log("POST query 01");
     connection.query('INSERT INTO users (lastname, firstname, email) VALUES ( "Tony", "Sam", "tonysam@whatever.com"), ( "Doe", "John", "john.doe@whatever.com" );');
+    console.log("POST query 02");
     res.send({ message: "init step done" })
   } catch (error) {
     console.log(`Error doing the init DB: ${error}`);
