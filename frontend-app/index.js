@@ -13,6 +13,7 @@ app.get('/', async (req, res) => {
     res.write(`Hello from ${hostname}\n`)
     res.write(`The loadbalancer for the backend is ${process.env.APPLICATION_LOAD_BALANCER}\n`)
     res.write(`The environment value is ${process.env.ENVIRONMENT}\n`)
+    res.write(`The secret value is ${process.env.Test_v}\n`)
     res.end()
     res.send()
   }).catch(error => {
