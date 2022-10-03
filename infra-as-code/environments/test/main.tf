@@ -157,6 +157,10 @@ resource "aws_lb_target_group" "front_end" {
   }
 }
 
+#####################################################################
+# VPC endpoints
+#####################################################################
+
 # VPC internal endpoints for Fargate
 resource "aws_security_group" "vpc_endpoint" {
   name   = "vpc_endpoint_sg"
