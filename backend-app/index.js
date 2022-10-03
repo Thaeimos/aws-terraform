@@ -29,12 +29,14 @@ app.get('/', async (req, res) => {
 app.get('/init', async (req, res) => {
   console.log("Received a /init request!");
   try {
+    connection.query(`use ${process.env.RDS_DB_NAME};`)
+    console.log("POST select DB");
+
     connection.query('SELECT 1 + 1 AS solution', (err, rows, fields) => {
       if (err) throw err
     
       console.log('The solution is: ', rows[0].solution)
     })
-    connection.query(`use ${process.env.RDS_DB_NAME};`)
     console.log("POST query");
 
     connection.query('CREATE TABLE IF NOT EXISTS users (id INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY, lastname VARCHAR(40), firstname VARCHAR(40), email VARCHAR(30));');
