@@ -36,7 +36,7 @@ app.get('/users', async (req, res) => {
   // connection.query('SELECT * from users', function (error, results) {
   //   if (error) throw error;
   //   res.send(results)
-  });
+  // });
 })
 
 app.get('/test-back', async (req, res) => {
