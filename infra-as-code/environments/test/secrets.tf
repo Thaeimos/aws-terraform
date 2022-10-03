@@ -9,7 +9,11 @@ resource "random_password" "password" {
 # Creating a AWS secret for database master account (Masteraccoundb)
  
 resource "aws_secretsmanager_secret" "secretmasterDB" {
-   name = "Masteraccountdb"
+    name = "db-credentials"
+
+    lifecycle {
+        prevent_destroy = true
+    } 
 }
  
 # Creating a AWS secret versions for database master account (Masteraccoundb)
