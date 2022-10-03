@@ -26,7 +26,10 @@ app.get('/init', async (req, res) => {
       db_name: process.env.RDS_DB_NAME
     });
     console.log("POST create connection");
-    connection.connect()
+    connection.connect(error => {
+      if (error) throw error;
+      console.log("Successfully connected to the database.");
+    });
     console.log("POST connect");
     connection.query(`use ${process.env.RDS_DB_NAME};`)
     console.log("POST query");
