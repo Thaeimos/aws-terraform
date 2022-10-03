@@ -102,10 +102,10 @@ resource "aws_route_table" "private" {
   for_each  = {for idx, az_name in local.az_names: idx => az_name}
   vpc_id    = aws_vpc.vpc.id
 
-  route {
-      cidr_block = "0.0.0.0/0"
-      nat_gateway_id = aws_nat_gateway.nat_gateway[each.key].id
-  }
+  # route {
+  #     cidr_block = "0.0.0.0/0"
+  #     nat_gateway_id = aws_nat_gateway.nat_gateway[each.key].id
+  # }
 
   tags = {
     Name = "private-route-${each.value}"
@@ -318,16 +318,17 @@ data "template_file" "front_task_definition_template" {
 }
 
 resource "aws_ecs_task_definition" "front_task_definition" {
-  family                = var.frontend_name
-  container_definitions = data.template_file.front_task_definition_template.rendered
-  requires_compatibilities = ["EC2"]
+  family                    = var.frontend_name
+  container_definitions     = data.template_file.front_task_definition_template.rendered
+  requires_compatibilities  = ["EC2"]
+  execution_role_arn        = aws_iam_role.fargate_execution.arn
 }
 
 resource "aws_ecs_service" "frontend_application" {
-  name            = var.frontend_name
-  cluster         = aws_ecs_cluster.ecs_cluster_frontend.id
-  task_definition = aws_ecs_task_definition.front_task_definition.arn
-  desired_count   = 3
+  name                  = var.frontend_name
+  cluster               = aws_ecs_cluster.ecs_cluster_frontend.id
+  task_definition       = aws_ecs_task_definition.front_task_definition.arn
+  desired_count         = 3
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.ec2.name
@@ -438,6 +439,51 @@ resource "aws_appautoscaling_policy" "ecs_policy" {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
   }
+}
+
+resource "aws_iam_policy" "ec2_execution" {
+  name   = "ec2_execution_policy"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+        "Effect": "Allow",
+        "Action": [
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:BatchGetImage",
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:GetAuthorizationToken",
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+        ],
+        "Resource": "*"
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "ssm:GetParameters",
+            "secretsmanager:GetSecretValue",
+            "kms:Decrypt"
+        ],
+        "Resource": [
+            "*"
+        ]
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role" "ec2_execution" {
+  name               = "front-ec2-execution-role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_agent_back.json
+}
+
+resource "aws_iam_role_policy_attachment" "ec2-execution" {
+  role       = aws_iam_role.ec2_execution.name
+  policy_arn = aws_iam_policy.ec2_execution.arn
 }
 
 
@@ -617,10 +663,12 @@ resource "aws_iam_role" "fargate_task" {
   name               = "back-fargate-task-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_agent_back.json
 }
+
 resource "aws_iam_role_policy_attachment" "fargate-execution" {
   role       = aws_iam_role.fargate_execution.name
   policy_arn = aws_iam_policy.fargate_execution.arn
 }
+
 resource "aws_iam_role_policy_attachment" "fargate-task" {
   role       = aws_iam_role.fargate_task.name
   policy_arn = aws_iam_policy.fargate_task.arn
@@ -897,8 +945,8 @@ resource "aws_db_instance" "rds_demo" {
   allocated_storage         = 5 # We should use 100 for more IOPs but this is a demo...
   engine                    = "mariadb"
   engine_version            = "10.6.8"
-  username                  = var.db_username
-  password                  = var.db_password
+  username                  = local.db_creds.username
+  password                  = local.db_creds.password
   db_subnet_group_name      = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids    = [aws_security_group.rds_sg.id]
   parameter_group_name      = aws_db_parameter_group.rds_param.name
