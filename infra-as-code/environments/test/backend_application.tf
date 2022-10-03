@@ -279,7 +279,7 @@ resource "aws_ecs_service" "backend_application" {
   }
 
   lifecycle {
-    ignore_changes = [task_definition]
+    ignore_changes = [task_definition,deployment_minimum_healthy_percent]
   }
 }
 
