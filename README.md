@@ -89,7 +89,8 @@ List the ready features here:
 
 
 
-## Screenshots
+## Architectural Diagram
+![Architectural Diagram](/documents/architecture_diagram.png)
 
 
 
@@ -112,20 +113,13 @@ Project is: _Actively working_.
 ## Room for Improvement
 Include areas you believe need improvement / could be improved. Also add TODOs for future development.
 
-- Generate a VPC (VPC01) with private subnets, and the required subnets elements (Route tables, etc).
-
 - Provision an application using ECS with EC2 and Fargate with the following elements: public component, private component, database component and all the required elements (security groups, roles, log groups, etc). The components must we interconnected, so for example the public layer must connect to the application layer and the application layer must connect to the database layer. A load balancer with target and auto-scalation groups must be utilized for each layer.
-- For the database layer, use an AWS managed service.
 - Select and add five CloudWatch alarms related to the implementation. We require explanation about the reasons of the selected alarms.
 - A diagram with the implementation is required.
 - Security
-- Logging solution from ground up
-- Monitoring solution from ground up
-- Blue/Green deployments - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-blue-green.html ?
 - Test then prod
 - Github pipelines
     - Docker scan in pipeline
-- Module pinning - Perhaps using https://github.com/philips-software/terraform-aws-ecs/tree/2.2.0 ?
 - Generate MFA for read only users.
 - Encrypt password for read only users.
 - Use spot instances for EC2 ECS.
