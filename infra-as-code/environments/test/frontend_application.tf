@@ -183,7 +183,7 @@ resource "aws_ecs_service" "frontend_application" {
   }
 
   lifecycle {
-    ignore_changes = [task_definition]
+    ignore_changes = [task_definition, desired_count, deployment_minimum_healthy_percent]
   }
 }
 
