@@ -80,15 +80,15 @@ resource "aws_lb_listener" "back_end" {
 }
 
 resource "aws_lb_target_group" "back_end" {
-  name          = "back-end-lb-tg"
-  port          = 3000
-  protocol      = "HTTP"
-  vpc_id        = aws_vpc.vpc.id
-  target_type   = "ip"
+  name        = "back-end-lb-tg"
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.vpc.id
+  target_type = "ip"
 
   health_check {
-    matcher   = "200,301,302"
-    path      = "/healthcheck"
+    matcher = "200,301,302"
+    path    = "/healthcheck"
   }
 }
 
@@ -189,7 +189,7 @@ resource "aws_iam_role_policy_attachment" "fargate-task" {
 
 # ECR
 resource "aws_ecr_repository" "docker_repo_backend" {
-  name  = var.backend_name
+  name = var.backend_name
 }
 
 resource "aws_ecr_lifecycle_policy" "docker_repo_backend" {
@@ -199,10 +199,10 @@ resource "aws_ecr_lifecycle_policy" "docker_repo_backend" {
     rules = [{
       rulePriority = 1
       description  = "keep last 10 images"
-      action       = {
+      action = {
         type = "expire"
       }
-      selection     = {
+      selection = {
         tagStatus   = "any"
         countType   = "imageCountMoreThan"
         countNumber = 10
@@ -213,7 +213,7 @@ resource "aws_ecr_lifecycle_policy" "docker_repo_backend" {
 
 # ECS
 resource "aws_ecs_cluster" "ecs_cluster_backend" {
-  name  = var.backend_name
+  name = var.backend_name
 }
 
 resource "aws_ecs_cluster_capacity_providers" "example" {
@@ -230,8 +230,8 @@ resource "aws_ecs_cluster_capacity_providers" "example" {
 
 # Cloudwatch log group
 resource "aws_cloudwatch_log_group" "log_ecs_backend" {
-  name                = var.backend_name
-  retention_in_days   = 30
+  name              = var.backend_name
+  retention_in_days = 30
 
   tags = {
     Environment = var.environment
@@ -243,29 +243,29 @@ resource "aws_cloudwatch_log_group" "log_ecs_backend" {
 data "template_file" "back_task_definition_template" {
   template = file("task_definition.json.tpl")
   vars = {
-    REPOSITORY_URL  = replace(aws_ecr_repository.docker_repo_backend.repository_url, "https://", "")
-    ENV_VAR         = var.environment
-    CONTAINER_NAME  = var.backend_name
+    REPOSITORY_URL = replace(aws_ecr_repository.docker_repo_backend.repository_url, "https://", "")
+    ENV_VAR        = var.environment
+    CONTAINER_NAME = var.backend_name
   }
 }
 
 resource "aws_ecs_task_definition" "back_task_definition" {
-  family                      = var.backend_name
-  container_definitions       = data.template_file.back_task_definition_template.rendered
-  requires_compatibilities    = ["FARGATE"]
-  network_mode                = "awsvpc"
-  cpu                         = "256"     # Need CPU and memory at the task level, not container level
-  memory                      = "512"
-  execution_role_arn          = aws_iam_role.fargate_execution.arn
-  task_role_arn               = aws_iam_role.fargate_task.arn
+  family                   = var.backend_name
+  container_definitions    = data.template_file.back_task_definition_template.rendered
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = "256" # Need CPU and memory at the task level, not container level
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.fargate_execution.arn
+  task_role_arn            = aws_iam_role.fargate_task.arn
 }
 
 resource "aws_ecs_service" "backend_application" {
-  name              = var.backend_name
-  cluster           = aws_ecs_cluster.ecs_cluster_backend.id
-  task_definition   = aws_ecs_task_definition.back_task_definition.arn
-  desired_count     = 2
-  launch_type       = "FARGATE"
+  name            = var.backend_name
+  cluster         = aws_ecs_cluster.ecs_cluster_backend.id
+  task_definition = aws_ecs_task_definition.back_task_definition.arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
 
   load_balancer {
     target_group_arn = aws_lb_target_group.back_end.arn
@@ -274,12 +274,12 @@ resource "aws_ecs_service" "backend_application" {
   }
 
   network_configuration {
-    subnets           = values(aws_subnet.priv_subnet)[*].id
-    security_groups   = [aws_security_group.ecs_task_back.id]
+    subnets         = values(aws_subnet.priv_subnet)[*].id
+    security_groups = [aws_security_group.ecs_task_back.id]
   }
 
   lifecycle {
-    ignore_changes = [task_definition,deployment_minimum_healthy_percent]
+    ignore_changes = [task_definition, deployment_minimum_healthy_percent]
   }
 }
 
