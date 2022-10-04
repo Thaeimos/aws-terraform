@@ -27,11 +27,11 @@ resource "aws_security_group" "alb_presentation_tier" {
   }
 
   egress {
-    description     = "Outgoing connections to anywhere"
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    description = "Outgoing connections to anywhere"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
@@ -93,8 +93,8 @@ resource "aws_iam_instance_profile" "ecs_agent_front" {
 
 # Dynamic AMI
 data "aws_ami" "ecs_ami" {
-  most_recent   = true
-  owners        = ["amazon"]
+  most_recent = true
+  owners      = ["amazon"]
 
   filter {
     name   = "name"
@@ -109,7 +109,7 @@ data "aws_ami" "ecs_ami" {
 
 # ECR
 resource "aws_ecr_repository" "docker_repo_frontend" {
-  name  = var.frontend_name
+  name = var.frontend_name
 }
 
 resource "aws_ecr_lifecycle_policy" "docker_repo_frontend" {
@@ -119,10 +119,10 @@ resource "aws_ecr_lifecycle_policy" "docker_repo_frontend" {
     rules = [{
       rulePriority = 1
       description  = "keep last 10 images"
-      action       = {
+      action = {
         type = "expire"
       }
-      selection     = {
+      selection = {
         tagStatus   = "any"
         countType   = "imageCountMoreThan"
         countNumber = 10
@@ -133,13 +133,13 @@ resource "aws_ecr_lifecycle_policy" "docker_repo_frontend" {
 
 # ECS
 resource "aws_ecs_cluster" "ecs_cluster_frontend" {
-  name  = var.frontend_name
+  name = var.frontend_name
 }
 
 # Cloudwatch log group
 resource "aws_cloudwatch_log_group" "log_ecs_frontend" {
-  name                = var.frontend_name
-  retention_in_days   = 30
+  name              = var.frontend_name
+  retention_in_days = 30
 
   tags = {
     Environment = var.environment
@@ -152,23 +152,23 @@ data "template_file" "front_task_definition_template" {
   template = file("task_definition.json.tpl")
   vars = {
     REPOSITORY_URL = replace(aws_ecr_repository.docker_repo_frontend.repository_url, "https://", "")
-    ENV_VAR = var.environment
+    ENV_VAR        = var.environment
     CONTAINER_NAME = var.frontend_name
   }
 }
 
 resource "aws_ecs_task_definition" "front_task_definition" {
-  family                    = var.frontend_name
-  container_definitions     = data.template_file.front_task_definition_template.rendered
-  requires_compatibilities  = ["EC2"]
-  execution_role_arn        = aws_iam_role.fargate_execution.arn
+  family                   = var.frontend_name
+  container_definitions    = data.template_file.front_task_definition_template.rendered
+  requires_compatibilities = ["EC2"]
+  execution_role_arn       = aws_iam_role.fargate_execution.arn
 }
 
 resource "aws_ecs_service" "frontend_application" {
-  name                  = var.frontend_name
-  cluster               = aws_ecs_cluster.ecs_cluster_frontend.id
-  task_definition       = aws_ecs_task_definition.front_task_definition.arn
-  desired_count         = 3
+  name            = var.frontend_name
+  cluster         = aws_ecs_cluster.ecs_cluster_frontend.id
+  task_definition = aws_ecs_task_definition.front_task_definition.arn
+  desired_count   = 3
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.ec2.name
@@ -189,13 +189,13 @@ resource "aws_ecs_service" "frontend_application" {
 
 # Autoscaling group
 resource "aws_launch_configuration" "ecs_launch_config" {
-  name_prefix           = "${var.name}-"
-  image_id              = data.aws_ami.ecs_ami.id
-  iam_instance_profile  = aws_iam_instance_profile.ecs_agent_front.name
-  security_groups       = [aws_security_group.presentation_tier.id]
-  user_data             = templatefile("user-data.sh.tpl", { cluster_name = "${aws_ecs_cluster.ecs_cluster_frontend.name}" })
+  name_prefix          = "${var.name}-"
+  image_id             = data.aws_ami.ecs_ami.id
+  iam_instance_profile = aws_iam_instance_profile.ecs_agent_front.name
+  security_groups      = [aws_security_group.presentation_tier.id]
+  user_data            = templatefile("user-data.sh.tpl", { cluster_name = "${aws_ecs_cluster.ecs_cluster_frontend.name}" })
 
-  instance_type         = "t2.micro"
+  instance_type = "t2.micro"
 
   lifecycle {
     create_before_destroy = true
@@ -207,9 +207,9 @@ resource "aws_launch_configuration" "ecs_launch_config" {
 }
 
 resource "aws_autoscaling_group" "public_ecs_asg" {
-  name                      = "asg"
-  vpc_zone_identifier       = values(aws_subnet.pub_subnet)[*].id
-  launch_configuration      = aws_launch_configuration.ecs_launch_config.name
+  name                 = "asg"
+  vpc_zone_identifier  = values(aws_subnet.pub_subnet)[*].id
+  launch_configuration = aws_launch_configuration.ecs_launch_config.name
 
   desired_capacity          = 3
   min_size                  = 1

@@ -23,12 +23,12 @@ terraform {
 }
 
 provider "aws" {
-  region  = var.region
+  region = var.region
 
   default_tags {
     tags = {
-      purpose       = var.name
-      environment   = var.environment
+      purpose     = var.name
+      environment = var.environment
     }
   }
 }

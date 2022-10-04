@@ -17,7 +17,7 @@ variable "environment" {
 }
 
 variable "read_only_users" {
-  type        = list
+  type        = list(any)
   description = "List of users to create with read only access."
 }
 
@@ -50,28 +50,28 @@ variable "db_password" {
 
 variable "time_response_thresholds" {
   default = {
-    period              = "60" //Seconds
-    statistic           = "Average"
-    threshold           = "1" //Seconds
- }
+    period    = "60" //Seconds
+    statistic = "Average"
+    threshold = "1" //Seconds
+  }
 }
 
 variable "fiveXXs_thresholds" {
   default = {
-    period              = "60" //Seconds
-    statistic           = "Average"
-    threshold           = "1" //Count
- }
+    period    = "60" //Seconds
+    statistic = "Average"
+    threshold = "1" //Count
+  }
 }
 
 variable "evaluation_period" {
-    type        = string
-    description = "The evaluation period over which to use when triggering alarms."
-    default     = "1"
+  type        = string
+  description = "The evaluation period over which to use when triggering alarms."
+  default     = "1"
 }
 
 variable "statistic_period" {
-    type        = string
-    description = "The number of seconds that make each statistic period."
-    default     = "60"
+  type        = string
+  description = "The number of seconds that make each statistic period."
+  default     = "60"
 }

@@ -4,7 +4,7 @@
 
 # VPC
 resource "aws_vpc" "vpc" {
-  cidr_block = var.main_cidr_block
+  cidr_block           = var.main_cidr_block
   enable_dns_support   = true
   enable_dns_hostnames = true
 
@@ -32,7 +32,7 @@ locals {
 }
 
 resource "aws_subnet" "pub_subnet" {
-  for_each                = {for idx, az_name in local.az_names: idx => az_name}
+  for_each                = { for idx, az_name in local.az_names : idx => az_name }
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = cidrsubnet(var.main_cidr_block, 8, each.key)
   availability_zone       = local.az_names[each.key]
@@ -44,7 +44,7 @@ resource "aws_subnet" "pub_subnet" {
 }
 
 resource "aws_subnet" "priv_subnet" {
-  for_each                = {for idx, az_name in local.az_names: idx => az_name}
+  for_each                = { for idx, az_name in local.az_names : idx => az_name }
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = cidrsubnet(var.main_cidr_block, 8, each.key + length(local.az_names))
   availability_zone       = local.az_names[each.key]
@@ -60,8 +60,8 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.vpc.id
 
   route {
-      cidr_block = "0.0.0.0/0"
-      gateway_id = aws_internet_gateway.internet_gateway.id
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.internet_gateway.id
   }
 
   tags = {
@@ -70,37 +70,37 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "route_table_association" {
-  for_each       = {for idx, az_name in local.az_names: idx => az_name}
+  for_each       = { for idx, az_name in local.az_names : idx => az_name }
   subnet_id      = aws_subnet.pub_subnet[each.key].id
   route_table_id = aws_route_table.public.id
 }
 
 # Elastic IPs and NAT Gateways
 resource "aws_eip" "nat_ip" {
-  for_each    = {for idx, az_name in local.az_names: idx => az_name}
-  depends_on  = [aws_internet_gateway.internet_gateway]
-  vpc         = true
+  for_each   = { for idx, az_name in local.az_names : idx => az_name }
+  depends_on = [aws_internet_gateway.internet_gateway]
+  vpc        = true
 
   tags = {
-    Name        = "EIP-${each.value}"
+    Name = "EIP-${each.value}"
   }
 }
 
 resource "aws_nat_gateway" "nat_gateway" {
-  for_each      = {for idx, az_name in local.az_names: idx => az_name}
+  for_each      = { for idx, az_name in local.az_names : idx => az_name }
   allocation_id = aws_eip.nat_ip[each.key].id
   subnet_id     = aws_subnet.pub_subnet[each.key].id
   depends_on    = [aws_internet_gateway.internet_gateway]
 
   tags = {
-    Name        = "NAT-${each.value}"
+    Name = "NAT-${each.value}"
   }
 }
 
 # Private routes
 resource "aws_route_table" "private" {
-  for_each  = {for idx, az_name in local.az_names: idx => az_name}
-  vpc_id    = aws_vpc.vpc.id
+  for_each = { for idx, az_name in local.az_names : idx => az_name }
+  vpc_id   = aws_vpc.vpc.id
 
   # route {
   #     cidr_block = "0.0.0.0/0"
@@ -113,7 +113,7 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "route_table_association_priv" {
-  for_each       = {for idx, az_name in local.az_names: idx => az_name}
+  for_each       = { for idx, az_name in local.az_names : idx => az_name }
   subnet_id      = aws_subnet.priv_subnet[each.key].id
   route_table_id = aws_route_table.private[each.key].id
 }
@@ -152,8 +152,8 @@ resource "aws_lb_target_group" "front_end" {
   vpc_id   = aws_vpc.vpc.id
 
   health_check {
-    matcher   = "200,301,302"
-    path      = "/healthcheck"
+    matcher = "200,301,302"
+    path    = "/healthcheck"
   }
 }
 
@@ -244,7 +244,7 @@ resource "aws_vpc_endpoint" "secretsmanager" {
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = values(aws_subnet.priv_subnet)[*].id
-	security_group_ids = [
+  security_group_ids = [
     aws_security_group.vpc_endpoint.id,
   ]
 }
