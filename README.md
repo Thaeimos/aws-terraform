@@ -112,6 +112,51 @@ List the ready features here:
 ## Usage
 
 
+### Deploy infrastructure
+First we need to deploy the infrastructure. There are several environments created for this but only one is [active](/infra-as-code/environments/test/). We move into that folder and we fill up the necessary information to connect to the remote bucket that will contain our state:
+
+```bash
+cat backend.tfvars.example
+    bucket              = "sre-challenge-test"
+    dynamodb_table      = "test-dqwdw"
+    encrypt             = false
+    region              = "us-west-2"
+    key                 = "sre"
+```
+
+The file that we should put our information should be called "backend.tfvars".
+Once that's done, we can initialize our environment to connect to the remote state:
+
+```bash
+terraform init -backend-config backend.tfvars
+```
+
+Moving forward, we should fill up a "terraform.tfvars" file similar to the example provided, so we can add the values needed to our variables in the manifests:
+
+```bash
+cat terraform.tfvars.example
+    region                  = "us-east-1"
+    read_only_users         = ["test-01","test-01"]
+    main_cidr_block         = "10.0.0.0/16"
+    environment             = "dev"
+    frontend_name           = "frontend-app"
+    backend_name            = "backend-app"
+    db_username             = "db_user"
+    db_password             = "th3_p4assw0rd"
+```
+
+And the config should be done, we just need to apply it with:
+
+```bash
+terraform apply # -auto-approve # Only for the brave
+```
+
+### Deploy frontend application
+This should be done automatically with the Github workflows provided. Just do a bogus change in one of the files inside the [frontend folder](/frontend-app/) and commit and push and it should deploy automatically.
+
+### Deploy backend application
+This should be done automatically with the Github workflows provided. Just do a bogus change in one of the files inside the [backend folder](/backend-app/) and commit and push and it should deploy automatically.
+
 
 ## Project Status
 Project is: _Actively working_.
