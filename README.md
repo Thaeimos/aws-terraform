@@ -64,6 +64,8 @@ List the ready features here:
     - Variable substitution using placeholders.
     - Use AWS Secrets Manager to put sensitive data in the templates and in the task.
     - Healthcheck separated endpoint for target group.
+    - Lint and security scan on PR for the application.
+    - Dockerfile scan in pipeline.
 
 - Backend application using ECS (Fargate) as an application component with:
     - Security groups.
@@ -75,6 +77,8 @@ List the ready features here:
     - Healthcheck separated endpoint for target group.
     - Variable substitution using placeholders.
     - Use AWS Secrets Manager to put sensitive data in the templates and in the task.
+    - Lint and security scan on PR for the application.
+    - Dockerfile scan in pipeline.
 
 - External endpoint of type "application" for exposing the 3 tier web stack.
 
@@ -204,9 +208,7 @@ Project is: _Actively working_.
 ## Room for Improvement
 Include areas you believe need improvement / could be improved. Also add TODOs for future development.
 
-- Test then prod
-- Github pipelines
-    - Docker scan in pipeline
+- Test then prod.
 - Generate MFA for read only users.
 - Encrypt password for read only users.
 - Use spot instances for EC2 ECS.
@@ -218,7 +220,7 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
     - Create proper DNS name that points to the ELB DNS name.
 - Docker multistage
 - Cache in pipelines for docker
-- Lint and security scan on PR on applications
+
 
 
 ## Acknowledgements
