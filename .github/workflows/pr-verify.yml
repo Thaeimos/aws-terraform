@@ -25,8 +25,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Credentials scanner
-        run: |
-          echo "To be done in the future"
+        uses: ShiftLeftSecurity/scan-action@v1.3.0
 
       - name: Build node
         run: |
