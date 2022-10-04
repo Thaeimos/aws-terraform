@@ -81,7 +81,7 @@ List the ready features here:
 - We've have added 5 alarms to monitor the application. Given the small number of alarms, we tend to focus on general behaviour of the whole stack instead of specific parts:
     - "target_response_time" to monitor the response time of the application. Useful if you deploy a new version and see it's more sluggish than the previous one. Also contributes to user satisfaction.
     - "error_rate" to monitor the number of bad responses we give to customers vs the total of responses. Generic workhorse for every web application monitoring.
-    - "target_healthy_count_applications" to monitor the number of unhealthy tasks in the EC2 or Fargate cluster. We monitor both clusters in the same alarm. Useful to check if there are problems in any of the workloads. This is more specific than the previous two alerts.
+    - "target_healthy_count_applications" to monitor the number of healthy tasks in the EC2 or Fargate cluster. We monitor both clusters in the same alarm. Useful to check if there are problems in any of the workloads. This is more specific than the previous two alerts.
     - "rds_cpu_utilization_too_high" and "rds_disk_free_storage_space_too_low" to monitor CPU and free space in our RDS database. I've honestly think this is the bare minimum for database monitoring and I feel nervous about having so few alarms for the database stack.
 
 - Github pipelines to manage applications
@@ -156,6 +156,38 @@ This should be done automatically with the Github workflows provided. Just do a 
 
 ### Deploy backend application
 This should be done automatically with the Github workflows provided. Just do a bogus change in one of the files inside the [backend folder](/backend-app/) and commit and push and it should deploy automatically.
+
+### Test
+We can use curl commands to the external load balancer and get their responses to see if all is working.
+
+For example, to get a pure frontend response and see the values of some variables and bogus secrets, you can do the following:
+```bash
+curl http://sre-challenge-front-end-lb-820694651.eu-west-2.elb.amazonaws.com/
+    Hello from ip-10-0-1-181.eu-west-2.compute.internal
+    The loadbalancer for the backend is internal-sre-challenge-back-end-lb-234524435.eu-west-2.elb.amazonaws.com
+    The environment value is production
+    The secret value is incode_user
+```
+
+To see a full interaction between the three stacks (Frontend, backend and database), you can call this endpoint:
+```bash
+curl http://sre-challenge-front-end-lb-820694651.eu-west-2.elb.amazonaws.com/users | jq ''
+    ...
+    [
+    {
+        "id": 1,
+        "lastname": "Tony",
+        "firstname": "Sam",
+        "email": "tonysam@whatever.com"
+    },
+    {
+        "id": 2,
+        "lastname": "Doe",
+        "firstname": "John",
+        "email": "john.doe@whatever.com"
+    }
+    ...
+```
 
 
 ## Project Status
