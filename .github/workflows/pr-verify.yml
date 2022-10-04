@@ -44,5 +44,7 @@ jobs:
           echo "To be done in the future"
 
       - name: Docker scanner
-        run: |
-          echo "To be done in the future"
+        uses: ghe-actions/dockerfile-validator@v2
+        with:
+          dockerfile: 'Dockerfile'
+          lint: 'hadolint'
