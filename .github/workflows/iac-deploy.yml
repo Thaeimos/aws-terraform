@@ -52,10 +52,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Create the backend.tfvars file
+      - name: Create the backend.tfvars and terraform.tfvars file
         id: build-image
         run: |
           echo ${{ secrets.TERRA_BUCKET }} | base64 -d > backend.tfvars
+          echo ${{ secrets.TERRA_VARS }} | base64 -d > terraform.tfvars
 
       - name: Terraform Setup
         uses: hashicorp/setup-terraform@v2
