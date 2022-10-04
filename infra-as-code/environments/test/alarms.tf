@@ -21,8 +21,8 @@ resource "aws_cloudwatch_metric_alarm" "target_healthy_count_applications" {
     alarm_name          = "Applications-Healthy-Count"
     comparison_operator = "LessThanOrEqualToThreshold"
     evaluation_periods  = var.evaluation_period
-    threshold           = "6"
-    alarm_description   = "Trigger an alert when the applications has 6 or less healthy tasks."
+    threshold           = "5"
+    alarm_description   = "Trigger an alert when the applications has 5 or less healthy tasks."
     treat_missing_data  = "breaching"
 
     metric_query {
@@ -71,11 +71,11 @@ resource "aws_cloudwatch_metric_alarm" "error_rate" {
   evaluation_periods        = var.evaluation_period
   threshold                 = "10"
   alarm_description         = "Request error rate has exceeded 10%"
-  insufficient_data_actions = []
+  treat_missing_data        = "notBreaching"
 
   metric_query {
     id          = "e1"
-    expression  = "(m2+m3)/m1*100"
+    expression  = " ((m2+m3)/m1) * 100 "
     label       = "Error Rate"
     return_data = "true"
   }
@@ -92,7 +92,6 @@ resource "aws_cloudwatch_metric_alarm" "error_rate" {
 
       dimensions = {
         LoadBalancer = "${aws_lb.front_end.arn_suffix}"
-        TargetGroup  = "${aws_lb_target_group.front_end.arn_suffix}"
       }
     }
   }
@@ -101,7 +100,7 @@ resource "aws_cloudwatch_metric_alarm" "error_rate" {
     id = "m2"
 
     metric {
-      metric_name = "HTTPCode_ELB_5XX_Count"
+      metric_name = "HTTPCode_Target_5XX_Count"
       namespace   = "AWS/ApplicationELB"
       period      = var.statistic_period
       stat        = "Sum"
@@ -118,7 +117,7 @@ resource "aws_cloudwatch_metric_alarm" "error_rate" {
     id = "m3"
 
     metric {
-      metric_name = "HTTPCode_ELB_4XX_Count"
+      metric_name = "HTTPCode_Target_4XX_Count"
       namespace   = "AWS/ApplicationELB"
       period      = var.statistic_period
       stat        = "Sum"
@@ -127,6 +126,40 @@ resource "aws_cloudwatch_metric_alarm" "error_rate" {
       dimensions = {
         LoadBalancer = "${aws_lb.front_end.arn_suffix}"
         TargetGroup  = "${aws_lb_target_group.front_end.arn_suffix}"
+      }
+    }
+  }
+
+  metric_query {
+    id = "m4"
+
+    metric {
+      metric_name = "HTTPCode_Target_5XX_Count"
+      namespace   = "AWS/ApplicationELB"
+      period      = var.statistic_period
+      stat        = "Sum"
+      unit        = "Count"
+
+      dimensions = {
+        LoadBalancer = "${aws_lb.front_end.arn_suffix}"
+        TargetGroup  = "${aws_lb_target_group.back_end.arn_suffix}"
+      }
+    }
+  }
+
+  metric_query {
+    id = "m5"
+
+    metric {
+      metric_name = "HTTPCode_Target_4XX_Count"
+      namespace   = "AWS/ApplicationELB"
+      period      = var.statistic_period
+      stat        = "Sum"
+      unit        = "Count"
+
+      dimensions = {
+        LoadBalancer = "${aws_lb.front_end.arn_suffix}"
+        TargetGroup  = "${aws_lb_target_group.back_end.arn_suffix}"
       }
     }
   }
@@ -156,7 +189,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_disk_free_storage_space_too_low" {
     namespace           = "AWS/RDS"
     period              = var.statistic_period
     statistic           = "Average"
-    threshold           = "1000000000" # 1GB
+    threshold           = "2500000000" # 2.5GB
     alarm_description   = "Average database free storage space is too low and may fill up soon."
 
     dimensions = {

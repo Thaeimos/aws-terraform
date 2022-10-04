@@ -52,7 +52,7 @@ variable "time_response_thresholds" {
   default = {
     period              = "60" //Seconds
     statistic           = "Average"
-    threshold           = "5" //Seconds
+    threshold           = "1" //Seconds
  }
 }
 
@@ -67,7 +67,7 @@ variable "fiveXXs_thresholds" {
 variable "evaluation_period" {
     type        = string
     description = "The evaluation period over which to use when triggering alarms."
-    default     = "2"
+    default     = "1"
 }
 
 variable "statistic_period" {
