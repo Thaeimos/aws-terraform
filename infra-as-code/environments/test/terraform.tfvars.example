@@ -1,0 +1,8 @@
+region                  = "us-east-1"
+read_only_users         = ["test-01","test-01"]
+main_cidr_block         = "10.0.0.0/16"
+environment             = "dev"
+frontend_name           = "frontend-app"
+backend_name            = "backend-app"
+db_username             = "db_user"
+db_password             = "th3_p4assw0rd"

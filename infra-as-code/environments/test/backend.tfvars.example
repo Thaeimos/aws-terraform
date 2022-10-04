@@ -1,0 +1,5 @@
+bucket              = "sre-challenge-test"
+dynamodb_table      = "test-dqwdw"
+encrypt             = false
+region              = "us-west-2"
+key		    = "sre"
