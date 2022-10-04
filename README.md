@@ -86,6 +86,7 @@ List the ready features here:
 
 - Github pipelines to manage applications
     - Deploy on merge.
+    - Deploy Infrastructure as Code. You can see an example [here](https://github.com/Thaeimos/aws-terraform/actions/runs/3185190823).
     - Pinned versions for external actions.
     - Use environments in GH:
         - We have different set of variables that, depending on the branch you are merging to, will have different values. Very useful when you wanna have a different set of credentials, for example, for your production and development environments.
@@ -217,7 +218,6 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
     - Create proper DNS name that points to the ELB DNS name.
 - Docker multistage
 - Cache in pipelines for docker
-- Pipeline for IaC
 - Lint and security scan on PR on applications
 
 
