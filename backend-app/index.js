@@ -105,6 +105,11 @@ app.get('/healthcheck', async (req, res) => {
   res.send({ message: "OK" })
 })
 
+// Custom 500 to test alarms
+app.get('/500', async (req, res) => {
+  res.status(500).send({ message: "500 Internal Server Error" })
+})
+
 // Custom 404 route not found handler
 app.use((req, res) => {
   res.status(404).send({ message: "404 not found" })
