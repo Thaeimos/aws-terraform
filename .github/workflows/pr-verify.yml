@@ -1,0 +1,49 @@
+name: PR Verify for CI
+
+on:
+  pull_request:
+    paths:
+      - frontend-app/**
+      - backend-app/**
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Credentials scanner
+        run: |
+          echo "To be done in the future"
+
+      - name: Build node
+        run: |
+          echo "To be done in the future"
+
+      - name: Lint node
+        run: |
+          echo "To be done in the future"
+      
+      - name: Test node
+        run: |
+          echo "To be done in the future"
+
+      - name: Sonar scanner
+        run: |
+          echo "To be done in the future"
+
+      - name: Docker scanner
+        run: |
+          echo "To be done in the future"
