@@ -102,11 +102,11 @@ List the ready features here:
 
 
 ## Requirements
-
+N/A
 
 
 ## Installation
-
+N/A
 
 
 ## Usage
@@ -187,6 +187,12 @@ curl http://sre-challenge-front-end-lb-820694651.eu-west-2.elb.amazonaws.com/use
         "email": "john.doe@whatever.com"
     }
     ...
+```
+
+If we want to test if the alarm for the error rate is working, we can just issue a request to a non existant endpoint and check the AWS Cloudwatch dashboard:
+```bash
+curl http://sre-challenge-front-end-lb-820694651.eu-west-2.elb.amazonaws.com/500r4
+404 not found
 ```
 
 

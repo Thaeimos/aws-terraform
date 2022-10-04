@@ -75,7 +75,7 @@ resource "aws_cloudwatch_metric_alarm" "error_rate" {
 
   metric_query {
     id          = "e1"
-    expression  = " ((m2+m3)/m1) * 100 "
+    expression  = " ((m2+m3+m4+m5)/m1) * 100 "
     label       = "Error Rate"
     return_data = "true"
   }
