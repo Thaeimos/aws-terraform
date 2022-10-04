@@ -57,13 +57,11 @@ jobs:
         run: |
           echo ${{ secrets.TERRA_BUCKET }} | base64 -d > backend.tfvars
 
-      - name: Terraform Init
-        id: terraform-init
-        uses: rewindio/terraform-github-actions@master
+      - name: Terraform Setup
+        uses: hashicorp/setup-terraform@v2
         with:
-          tf_actions_subcommand: init
-          args: -backend-config backend.tfvars
-        # env:
-        #   TF_WORKSPACE: ${{ env.WORKSPACE }}
-        #   AWS_SHARED_CREDENTIALS_FILE: .aws/credentials
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          terraform_version: 1.1.7
+
+      - name: Terraform Init
+        run: |
+          terraform init -backend-config backend.tfvars
