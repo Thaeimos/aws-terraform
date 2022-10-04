@@ -65,3 +65,15 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init -backend-config backend.tfvars
+
+      - name: Terraform Validate
+        run: |
+          terraform validate
+
+      - name: Terraform Linter
+        run: |
+          echo "To be done in the future"
+
+      - name: Terraform Apply
+        run: |
+          terraform apply -auto-approve
