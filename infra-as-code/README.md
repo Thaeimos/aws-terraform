@@ -35,6 +35,14 @@ terraform init -backend-config backend.tfvars
 terraform apply
 ```
 
+
+## Integrate with Github Actions
+Convert the "backend.tfvars" file into base64 and add it into the secrets:
+```bash
+cat backend.tfvars | base64 -w0
+```
+
+
 ## TODO
 - Make it work with GCP
 - Complete utilities
