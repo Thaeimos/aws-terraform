@@ -21,14 +21,14 @@ resource "aws_cloudwatch_metric_alarm" "target_healthy_count_applications" {
     alarm_name          = "Applications-Healthy-Count"
     comparison_operator = "LessThanOrEqualToThreshold"
     evaluation_periods  = var.evaluation_period
-    threshold           = "2"
-    alarm_description   = "Trigger an alert when the applications has 3 or more unhealthy tasks."
+    threshold           = "6"
+    alarm_description   = "Trigger an alert when the applications has 6 or less healthy tasks."
     treat_missing_data  = "breaching"
 
     metric_query {
         id          = "e1"
         expression  = "m1+m2"
-        label       = "Unhealthy Nodes"
+        label       = "Healthy Nodes"
         return_data = "true"
     }
 
