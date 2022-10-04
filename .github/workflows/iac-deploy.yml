@@ -1,0 +1,69 @@
+
+name: Deploy IaC using Terraform
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - infra-as-code/*
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECS_CLUSTER: ${{ secrets.FRONT_NAME }}
+
+jobs:
+
+  setup-stage:
+    name: Set environment based on branch
+    outputs:
+      phase: ${{ steps.env-name.outputs.phase }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Environment Name
+        id: env-name
+        run: |
+          if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
+              echo "::set-output name=phase::test"
+          else
+              echo "::set-output name=phase::prod"
+          fi
+
+  deploy:
+    name: Deploy IaC using Terraform
+    needs: setup-stage
+    runs-on: ubuntu-latest
+    environment: 
+      name: ${{needs.setup-stage.outputs.phase}}
+      url: http://thaeimos.com/${{needs.setup-stage.outputs.phase}}
+    defaults:
+      run:
+        shell: bash
+        working-directory: infra-as-code/environments/${{ needs.setup-stage.outputs.phase }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1.7.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create the backend.tfvars file
+        id: build-image
+        run: |
+          echo ${{ secrets.TERRA_BUCKET }} | base64 -d > backend.tfvars
+
+      - name: Terraform Init
+        id: terraform-init
+        uses: rewindio/terraform-github-actions@master
+        with:
+          tf_actions_subcommand: init
+          args: -backend-config backend.tfvars
+        # env:
+        #   TF_WORKSPACE: ${{ env.WORKSPACE }}
+        #   AWS_SHARED_CREDENTIALS_FILE: .aws/credentials
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
