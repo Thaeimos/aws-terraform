@@ -3,8 +3,8 @@ name: PR Verify for CI
 on:
   pull_request:
     paths:
-      - 'frontend-app/**'
-      - 'backend-app/**'
+      # - 'frontend-app/**'
+      # - 'backend-app/**'
 
 jobs:
   build:
