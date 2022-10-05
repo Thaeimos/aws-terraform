@@ -227,8 +227,8 @@ resource "aws_autoscaling_group" "public_ecs_asg" {
 
   warm_pool {
     pool_state                  = "Hibernated"
-    min_size                    = 3
-    max_group_prepared_capacity = 10
+    min_size                    = 1
+    max_group_prepared_capacity = 1
 
   }
 }
