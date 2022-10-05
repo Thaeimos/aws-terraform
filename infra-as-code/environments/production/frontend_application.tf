@@ -261,7 +261,7 @@ resource "aws_ecs_cluster_capacity_providers" "front_provider" {
 }
 
 resource "aws_appautoscaling_target" "ecs" {
-  min_capacity       = 4
+  min_capacity       = 1
   max_capacity       = 20
   resource_id        = "service/${aws_ecs_cluster.ecs_cluster_frontend.name}/${aws_ecs_service.frontend_application.name}"
   scalable_dimension = "ecs:service:DesiredCount"
