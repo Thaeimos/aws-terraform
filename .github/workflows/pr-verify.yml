@@ -56,16 +56,17 @@ jobs:
         run: |
           for FILE in ${{ steps.changed-files.outputs.all_changed_files }}; do
             if grep -q frontend $FILE; then
-              PATH_FILE='frontend-app/'
+              echo ::set-output name=file_folder::"frontend-app/"
               echo "$FILE is in frontend"
             elif grep -q backend $FILE; then
-              PATH_FILE='backend-app/'
+              echo ::set-output name=file_folder::"backend-app/"
               echo "$FILE is in backend"
             else
               echo "$FILE nowhere"
+            fi
           done
 
       - uses: ghe-actions/dockerfile-validator@v1
         with:
-          dockerfile: 'Dockerfile'
+          dockerfile: '${{ steps.grep-files.outputs.file_folder }}Dockerfile'
           lint: 'hadolint'
