@@ -42,7 +42,17 @@ jobs:
       - name: Sonar scanner
         run: |
           echo "To be done in the future"
+      
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v31
 
-      - name: Docker scanner
+      - name: List all changed files
         run: |
-          echo "To be done in the future"
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
+
+      # - name: Docker scanner
+      #   run: |
+      #     echo "To be done in the future"
