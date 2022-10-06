@@ -115,7 +115,7 @@ N/A
 
 
 ### Deploy infrastructure
-First we need to deploy the infrastructure. There are several environments created for this but only one is [active](/infra-as-code/environments/test/). We move into that folder and we fill up the necessary information to connect to the remote bucket that will contain our state:
+First we need to deploy the infrastructure. There are several environments created for this but only one is [active](/infra-as-code/environments/production/). We move into that folder and we fill up the necessary information to connect to the remote bucket that will contain our state:
 
 ```bash
 cat backend.tfvars.example
