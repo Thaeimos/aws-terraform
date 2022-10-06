@@ -41,7 +41,7 @@ List the ready features here:
 - Monorepo. We have one folder for each application (Frontend and backend) and one folder for the infrastructure creation.
 - Docker utility with all the commands and tools needed.
     - Use user's defined service account if present. Otherwise resort to default service account.
-- IAM read-only users. Use this [link to connect](https://incode-test.signin.aws.amazon.com/console) to the account with the credentials provided. The code is in this [separated terraform file](/infra-as-code/environments/test/users.tf).
+- IAM read-only users. Use this [link to connect](https://incode-test.signin.aws.amazon.com/console) to the account with the credentials provided. The code is in this [separated terraform file](/infra-as-code/environments/production/users.tf).
 
 - VPC
     - Manually created instead using modules (Like https://github.com/terraform-aws-modules/terraform-aws-vpc?ref=v3.16.0 for example - Pinned, of course)
@@ -206,8 +206,6 @@ Project is: _Actively working_.
 Include areas you believe need improvement / could be improved. Also add TODOs for future development.
 
 - Test then prod
-- Github pipelines
-    - Docker scan in pipeline
 - Generate MFA for read only users.
 - Encrypt password for read only users.
 - Use spot instances for EC2 ECS.
