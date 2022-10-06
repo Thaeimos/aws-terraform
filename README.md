@@ -71,7 +71,7 @@ List the ready features here:
     - Cloudwatch log group.
     - Load balancer.
     - Auto-scalation application target.
-    - S3, ECR and Cloudwatch VPC endpoints.
+    - S3, ECR, Secrets Manger and Cloudwatch VPC endpoints so the private network without access to Internet can talk to those services.
     - Healthcheck separated endpoint for target group.
     - Variable substitution using placeholders.
     - Use AWS Secrets Manager to put sensitive data in the templates and in the task.
