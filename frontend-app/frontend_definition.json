@@ -27,7 +27,7 @@
         ],
         "secrets": [{
          "name": "Test_v",
-         "valueFrom": "arn:aws:secretsmanager:eu-west-2:790577265452:secret:db-credentials-nBqpSq:username::"
+         "valueFrom": "BACK_DB_SECRET_PLACEHOLDER:username::"
        }]
      },
      {
@@ -47,9 +47,9 @@
       "logConfiguration": {
           "logDriver": "awslogs",
           "options": {
-              "awslogs-region": "us-east-1",
+              "awslogs-region": "REGION_PLACEHOLDER",
               "awslogs-stream-prefix": "ecs",
-              "awslogs-group": "/ecs/service-a"
+              "awslogs-group": "NAME_PLACEHOLDER"
           }
       },
       "essential": true,
