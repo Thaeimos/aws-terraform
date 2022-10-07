@@ -78,6 +78,7 @@ jobs:
           sed -i 's/REGION_PLACEHOLDER/${{ secrets.AWS_REGION }}/g' $FILE
           sed -i 's/NAME_PLACEHOLDER/${{ secrets.FRONT_NAME }}/g' $FILE
           sed -i 's,FRONT_EXEC_ROLE_TASK_PLACEHOLDER,${{ secrets.FRONT_EXEC_ROLE_TASK }},g' $FILE 
+          sed -i 's,FRONT_SECRET_PLACEHOLDER,${{ secrets.BACK_DB_SECRET_GROUP }},g' $FILE
 
       - name: Debug task definition
         run: |
