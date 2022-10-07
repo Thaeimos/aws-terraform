@@ -4,8 +4,6 @@ import aws from 'aws-sdk'
 import AWSXRay from 'aws-xray-sdk'
 import http from 'http'
 
-const XRayExpress = AWSXRay.express;
-
 // Capture all AWS clients we create
 const AWS = AWSXRay.captureAWS(aws);
 AWS.config.update({region: process.env.DEFAULT_AWS_REGION || 'us-west-2'});
@@ -18,7 +16,7 @@ const PORT = process.env.PORT || 3000
 let app = express()
 const APPLICATION_LOAD_BALANCER = process.env.APPLICATION_LOAD_BALANCER;
 
-app.use(XRayExpress.openSegment('frontend'));
+app.use(AWSXRay.express.openSegment('Frontend'));
 
 app.get('/', async (req, res) => {
   const seg = AWSXRay.getSegment();
@@ -31,6 +29,7 @@ app.get('/', async (req, res) => {
     res.write(`The environment value is ${process.env.ENVIRONMENT}\n`)
     res.write(`The secret value is ${process.env.Test_v}\n`)
     res.end()
+    sub.close();
     res.send()
   }).catch(error => {
     console.log('There is some error - ' + error);
@@ -62,7 +61,7 @@ app.get('/users', async (req, res) => {
   fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/users`).then(async (response) => {
     console.log("Received a /users request!");
     const data = await response.json();
-    sub.close();
+    
     res.send(data)
   }).catch(error => {
     console.log('There is some error - ' + error);
