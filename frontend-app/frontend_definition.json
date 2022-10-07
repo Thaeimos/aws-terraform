@@ -25,10 +25,12 @@
               "value": "DEPRECATED"
           }
         ],
-        "secrets": [{
-         "name": "Test_v",
-         "valueFrom": "BACK_DB_SECRET_PLACEHOLDER:username::"
-       }]
+        "secrets": [
+         {
+            "name": "Test_v",
+            "valueFrom": "BACK_DB_SECRET_PLACEHOLDER:username::"
+         }
+      ]
      },
      {
       "environment": [],
