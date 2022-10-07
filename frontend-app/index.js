@@ -6,7 +6,7 @@ import http from 'http'
 
 // Capture all AWS clients we create
 const AWS = AWSXRay.captureAWS(aws);
-AWS.config.update({region: process.env.DEFAULT_AWS_REGION || 'us-west-2'});
+AWS.config.update({region: process.env.DEFAULT_AWS_REGION || 'eu-west-2'});
 
 // Capture all outgoing https requests
 AWSXRay.captureHTTPsGlobal(http);
@@ -16,11 +16,14 @@ const PORT = process.env.PORT || 3000
 let app = express()
 const APPLICATION_LOAD_BALANCER = process.env.APPLICATION_LOAD_BALANCER;
 
+AWSXRay.config([XRay.plugins.ECSPlugin]);
+AWSXRay.middleware.enableDynamicNaming();
 app.use(AWSXRay.express.openSegment('Frontend'));
 
 app.get('/', async (req, res) => {
   const seg = AWSXRay.getSegment();
   const sub = seg.addNewSubsegment('customSubsegment');
+  seg.addAnnotation('service', 'service-b-request');
   fetch('http://169.254.169.254/latest/meta-data/hostname').then(async(response) => {
     const hostname = await response.text();
     // console.log("Received a / request!");

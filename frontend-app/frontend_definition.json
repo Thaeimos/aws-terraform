@@ -29,7 +29,32 @@
          "name": "Test_v",
          "valueFrom": "arn:aws:secretsmanager:eu-west-2:790577265452:secret:db-credentials-nBqpSq:username::"
        }]
-     }
+     },
+     {
+      "environment": [],
+      "name": "xray-sidecar",
+      "mountPoints": [],
+      "image": "amazon/aws-xray-daemon",
+      "cpu": 32,
+      "memoryReservation": 128,
+      "portMappings": [
+          {
+              "protocol": "udp",
+              "containerPort": 2000,
+              "hostPort": 2000
+          }
+      ],
+      "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+              "awslogs-region": "us-east-1",
+              "awslogs-stream-prefix": "ecs",
+              "awslogs-group": "/ecs/service-a"
+          }
+      },
+      "essential": true,
+      "volumesFrom": []
+  }
   ],
   "cpu": "768",
   "family": "NAME_PLACEHOLDER",
