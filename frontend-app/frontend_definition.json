@@ -28,7 +28,7 @@
         "secrets": [
          {
             "name": "Test_v",
-            "valueFrom": "BACK_DB_SECRET_PLACEHOLDER:username::"
+            "valueFrom": "FRONT_SECRET_PLACEHOLDER:username::"
          }
       ]
      },
