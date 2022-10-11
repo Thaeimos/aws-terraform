@@ -92,7 +92,7 @@ List the ready features here:
         - We have different set of variables that, depending on the branch you are merging to, will have different values. Very useful when you wanna have a different set of credentials, for example, for your production and development environments.
         - We can create the environment and the secrets using the [instructions provided](/utilities/github-repo-setup/).
     - Variable substitution for the ECS tasks using secrets. Better centralized secret and variables storage and a lot of reusability.
-    - Lint and security scan on PR on applications. You can see a scanner that raised an issue [here](https://github.com/Thaeimos/aws-terraform/actions/runs/3190795246/jobs/5206360466). The scanner passed on this [execution](https://github.com/Thaeimos/aws-terraform/actions/runs/3224905581/jobs/5276567702).
+    - Lint and security scan on PR on applications. You can see a scanner that raised an issue [here](https://github.com/Thaeimos/aws-terraform/actions/runs/3190795246/jobs/5206360466). The scanner passed on this [execution](https://github.com/Thaeimos/aws-terraform/actions/runs/3224905581/jobs/5276567702#step:12:7).
 
 - Documentation
 
