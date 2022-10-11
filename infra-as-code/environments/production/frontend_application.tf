@@ -161,7 +161,8 @@ resource "aws_ecs_task_definition" "front_task_definition" {
   family                   = var.frontend_name
   container_definitions    = data.template_file.front_task_definition_template.rendered
   requires_compatibilities = ["EC2"]
-  execution_role_arn       = aws_iam_role.fargate_execution.arn
+  execution_role_arn       = aws_iam_role.ec2_execution.arn
+  task_role_arn            = aws_iam_role.ec2_execution.arn
 }
 
 resource "aws_ecs_service" "frontend_application" {
@@ -338,8 +339,7 @@ resource "aws_iam_role" "ec2_execution" {
   assume_role_policy = data.aws_iam_policy_document.ecs_agent_back.json
 }
 
-resource "aws_iam_role_policy_attachment" "ec2-execution" {
+resource "aws_iam_role_policy_attachment" "ec2_execution" {
   role       = aws_iam_role.ec2_execution.name
   policy_arn = aws_iam_policy.ec2_execution.arn
 }
-
