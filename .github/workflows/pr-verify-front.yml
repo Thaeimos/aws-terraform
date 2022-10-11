@@ -4,11 +4,9 @@ on:
   pull_request:
     paths:
       - 'frontend-app/**'
-      - 'backend-app/**'
   push:
     paths:
       - 'frontend-app/**'
-      - 'backend-app/**'
 
 jobs:
   build:
@@ -51,22 +49,7 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v31
 
-      - name: List all changed files
-        id: grep-files
-        run: |
-          for FILE in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            if grep -q frontend $FILE; then
-              echo ::set-output name=file_folder::"frontend-app/"
-              echo "$FILE is in frontend"
-            elif grep -q backend $FILE; then
-              echo ::set-output name=file_folder::"backend-app/"
-              echo "$FILE is in backend"
-            else
-              echo "$FILE nowhere"
-            fi
-          done
-
       - uses: ghe-actions/dockerfile-validator@v1
         with:
-          dockerfile: '${{ steps.grep-files.outputs.file_folder }}Dockerfile'
+          dockerfile: 'frontend-app/Dockerfile'
           lint: 'hadolint'
