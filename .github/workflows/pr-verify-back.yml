@@ -1,4 +1,4 @@
-name: PR Verify for CI
+name: PR Verify for CI - Backend
 
 on:
   pull_request:
