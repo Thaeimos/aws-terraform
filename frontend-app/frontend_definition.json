@@ -20,10 +20,14 @@
            }
         ],
         "environment": [
-          {
-              "name": "Environment",
-              "value": "DEPRECATED"
-          }
+         {
+            "name": "Environment",
+            "value": "DEPRECATED"
+         },
+         {
+            "name": "AWS_XRAY_DEBUG_MODE",
+            "value": "TRUE"
+         }
         ],
         "secrets": [
          {
