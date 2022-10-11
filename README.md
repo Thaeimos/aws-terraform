@@ -229,6 +229,7 @@ Give credit here.
 - We use code for the frontend and backend applications based on this [post](https://dev.to/eelayoubi/building-a-ha-aws-architecture-using-terraform-part-2-30gm).
 - Heavily use of environments to segment variables, as explained in this [document](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment).
 - Inspiration for internal ECRs and other comes from this [article](https://dev.to/danquack/private-fargate-deployment-with-vpc-endpoints-1h0p) and this [other](https://hands-on.cloud/how-to-launch-aws-fargate-cluster-tasks-in-private-subnets/) as well.
+- AWS Xray integration is partially based on this [repository](https://github.com/aws-samples/aws-xray-sdk-node-sample/blob/master/index.js). The [official documentation](https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-nodejs.html) also helped.
 
 
 
