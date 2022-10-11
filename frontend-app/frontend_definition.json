@@ -20,25 +20,28 @@
            }
         ],
         "environment": [
-         {
-            "name": "Environment",
-            "value": "DEPRECATED"
-         },
-         {
-            "name": "AWS_XRAY_DAEMON_ADDRESS",
-            "value": "localhost:2000"
-         },
-         {
-            "name": "AWS_XRAY_DEBUG_MODE",
-            "value": "TRUE"
-         }
+            {
+               "name": "Environment",
+               "value": "DEPRECATED"
+            },
+            {
+               "name": "AWS_XRAY_DAEMON_ADDRESS",
+               "value": "xray-sidecar:2000"
+            },
+            {
+               "name": "AWS_XRAY_DEBUG_MODE",
+               "value": "TRUE"
+            }
         ],
         "secrets": [
-         {
-            "name": "Test_v",
-            "valueFrom": "FRONT_SECRET_PLACEHOLDER:username::"
-         }
-      ]
+            {
+               "name": "Test_v",
+               "valueFrom": "FRONT_SECRET_PLACEHOLDER:username::"
+            }
+         ],
+         "links": [
+            "xray-daemon"
+          ]
      },
      {
       "environment": [],
@@ -46,12 +49,12 @@
       "mountPoints": [],
       "image": "amazon/aws-xray-daemon",
       "cpu": 32,
-      "memoryReservation": 128,
+      "memoryReservation": 256,
       "portMappings": [
           {
               "protocol": "udp",
               "containerPort": 2000,
-              "hostPort": 2000
+              "hostPort": 0
           }
       ],
       "logConfiguration": {
