@@ -197,6 +197,11 @@ curl http://sre-challenge-front-end-lb-820694651.eu-west-2.elb.amazonaws.com/500
 404 not found
 ```
 
+Do N requests to stage a batch of testing:
+```bash
+for INT in {1..10}; do curl http://sre-challenge-front-end-lb-820694651.eu-west-2.elb.amazonaws.com/users; done
+```
+
 
 ## Project Status
 Project is: _Actively working_.
