@@ -199,7 +199,8 @@ curl http://sre-challenge-front-end-lb-820694651.eu-west-2.elb.amazonaws.com/500
 
 Do N requests to stage a batch of testing:
 ```bash
-for INT in {1..10}; do curl http://sre-challenge-front-end-lb-820694651.eu-west-2.elb.amazonaws.com/users; done
+ENDPOINT="http://sre-challenge-front-end-lb-820694651.eu-west-2.elb.amazonaws.com"
+for INT in {1..10}; do curl $ENDPOINT/users; done
 ```
 
 
