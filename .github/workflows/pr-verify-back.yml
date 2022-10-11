@@ -49,7 +49,7 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v31
 
-      - uses: ghe-actions/dockerfile-validator@v1
+      - uses: ghe-actions/dockerfile-validator@v2
         with:
           dockerfile: 'backend-app/Dockerfile'
           lint: 'hadolint'
