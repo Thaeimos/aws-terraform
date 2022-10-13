@@ -23,7 +23,7 @@ app.use(AWSXRay.express.openSegment('Frontend'));
 app.get('/', async (req, res) => {
   const seg = AWSXRay.getSegment();
   const sub = seg.addNewSubsegment('customSubsegment');
-  seg.addAnnotation('service', 'service-b-request');
+  sub.addAnnotation('service', 'meta-data-service');
   fetch('http://169.254.169.254/latest/meta-data/hostname').then(async(response) => {
     const hostname = await response.text();
     // console.log("Received a / request!");
@@ -40,10 +40,15 @@ app.get('/', async (req, res) => {
 })
 
 app.get('/test-back', async (req, res) => {
+  const seg = AWSXRay.getSegment();
+  const sub = seg.addNewSubsegment('customSubsegment');
+  sub.addAnnotation('service', 'backend-service');
   fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/test-back`).then(async (response) => {
     console.log("Received a /test-back request!");
     const data = await response.json();
     console.log(`Received a /test-back response: ${data}`);
+
+    sub.close();
     res.send(data)
   }).catch(error => {
     console.log('There is some error - ' + error);
@@ -51,9 +56,14 @@ app.get('/test-back', async (req, res) => {
 })
 
 app.get('/init', async (req, res) => {
+  const seg = AWSXRay.getSegment();
+  const sub = seg.addNewSubsegment('customSubsegment');
+  sub.addAnnotation('service', 'backend-service');
   fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/init`).then(async (response) => {
     console.log("Received a /init request!");
     const data = await response.json();
+
+    sub.close();
     res.send(data)
   }).catch(error => {
     console.log('There is some error - ' + error);
@@ -61,10 +71,14 @@ app.get('/init', async (req, res) => {
 })
 
 app.get('/users', async (req, res) => {
+  const seg = AWSXRay.getSegment();
+  const sub = seg.addNewSubsegment('customSubsegment');
+  sub.addAnnotation('service', 'backend-service');
   fetch(`http://${process.env.APPLICATION_LOAD_BALANCER}/users`).then(async (response) => {
     console.log("Received a /users request!");
     const data = await response.json();
-    
+
+    sub.close();
     res.send(data)
   }).catch(error => {
     console.log('There is some error - ' + error);
