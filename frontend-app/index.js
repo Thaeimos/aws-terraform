@@ -14,7 +14,6 @@ AWSXRay.captureHTTPsGlobal(http);
 const PORT = process.env.PORT || 3000
 
 let app = express()
-const APPLICATION_LOAD_BALANCER = process.env.APPLICATION_LOAD_BALANCER;
 
 AWSXRay.config([AWSXRay.plugins.ECSPlugin]);
 AWSXRay.middleware.enableDynamicNaming();
