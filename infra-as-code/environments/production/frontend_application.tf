@@ -286,56 +286,56 @@ resource "aws_appautoscaling_policy" "ecs_policy" {
   }
 }
 
-resource "aws_iam_policy" "ec2_execution" {
-  name   = "ec2_execution_policy"
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchGetImage",
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:GetAuthorizationToken",
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-          "ssm:GetParameters",
-          "secretsmanager:GetSecretValue",
-          "kms:Decrypt"
-      ],
-      "Resource": [
-          "*"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-          "xray:*"
-      ],
-      "Resource": [
-          "*"
-      ]
-    }
-  ]
-}
-EOF
-}
+# resource "aws_iam_policy" "ec2_execution" {
+#   name   = "ec2_execution_policy"
+#   policy = <<EOF
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Effect": "Allow",
+#       "Action": [
+#           "ecr:GetDownloadUrlForLayer",
+#           "ecr:BatchGetImage",
+#           "ecr:BatchCheckLayerAvailability",
+#           "ecr:GetAuthorizationToken",
+#           "logs:CreateLogGroup",
+#           "logs:CreateLogStream",
+#           "logs:PutLogEvents"
+#       ],
+#       "Resource": "*"
+#     },
+#     {
+#       "Effect": "Allow",
+#       "Action": [
+#           "ssm:GetParameters",
+#           "secretsmanager:GetSecretValue",
+#           "kms:Decrypt"
+#       ],
+#       "Resource": [
+#           "*"
+#       ]
+#     },
+#     {
+#       "Effect": "Allow",
+#       "Action": [
+#           "xray:*"
+#       ],
+#       "Resource": [
+#           "*"
+#       ]
+#     }
+#   ]
+# }
+# EOF
+# }
 
 resource "aws_iam_role" "ec2_execution" {
   name               = "front-ec2-execution-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_agent_back.json
 }
 
-resource "aws_iam_role_policy_attachment" "ec2-execution" {
-  role       = aws_iam_role.ec2_execution.name
-  policy_arn = aws_iam_policy.ec2_execution.arn
-}
+# resource "aws_iam_role_policy_attachment" "ec2-execution" {
+#   role       = aws_iam_role.ec2_execution.name
+#   policy_arn = aws_iam_policy.ec2_execution.arn
+# }
