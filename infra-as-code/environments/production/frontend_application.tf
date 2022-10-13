@@ -361,15 +361,6 @@ resource "aws_iam_policy" "ec2_execution" {
       "Resource": [
           "*"
       ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-          "xray:*"
-      ],
-      "Resource": [
-          "*"
-      ]
     }
   ]
 }
