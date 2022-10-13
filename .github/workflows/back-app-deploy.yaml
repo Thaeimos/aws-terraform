@@ -79,6 +79,7 @@ jobs:
           sed -i 's/NAME_PLACEHOLDER/${{ secrets.BACK_NAME }}/g' $FILE
           sed -i 's,ROLE_PLACEHOLDER,${{ secrets.BACK_ROLE_TASK }},g' $FILE
           sed -i 's,BACK_DB_SECRET_PLACEHOLDER,${{ secrets.BACK_DB_SECRET_GROUP }},g' $FILE
+          sed -i 's,ECR_XRAY_URL_PLACEHOLDER,${{ secrets.XRAY_REG_URL }},g' $FILE
 
       - name: Debug task definition
         run: |
