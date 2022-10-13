@@ -1,15 +1,37 @@
 import express from 'express';
 import mysql from 'mysql';
+import aws from 'aws-sdk'
+import AWSXRay from 'aws-xray-sdk'
+import http from 'http'
+
+// Capture all AWS clients we create
+const AWS = AWSXRay.captureAWS(aws);
+AWS.config.update({region: process.env.DEFAULT_AWS_REGION || 'eu-west-2'});
+
+// Capture all outgoing https requests
+AWSXRay.captureHTTPsGlobal(http);
 
 const PORT = process.env.PORT || 3000
 
 let app = express()
 
+AWSXRay.config([AWSXRay.plugins.ECSPlugin]);
+AWSXRay.middleware.enableDynamicNaming();
+app.use(AWSXRay.express.openSegment('Backend'));
+
 app.get('/', async (req, res) => {
+  const seg = AWSXRay.getSegment();
+  const sub = seg.addNewSubsegment('customSubsegment');
+  sub.addAnnotation('service', 'backend-service');
+  sub.close();
   res.send({ message: "Hello world from the backend" })
 })
 
 app.get('/init', async (req, res) => {
+  const seg = AWSXRay.getSegment();
+  const sub = seg.addNewSubsegment('customSubsegment');
+  sub.addAnnotation('service', 'db-service');
+
   console.log("Received a /init request!");
 
   try {
@@ -59,10 +81,13 @@ app.get('/init', async (req, res) => {
         return console.log(err.message);
       }
     });
+
+    sub.close();
     res.send({ message: "init step done" })
 
   } catch (error) {
       console.log(`Error doing the init DB: ${error}`);
+      sub.close();
       res.send({ message: "init step not OK :(" })
   }
 })
@@ -114,6 +139,8 @@ app.get('/500', async (req, res) => {
 app.use((req, res) => {
   res.status(404).send({ message: "404 not found" })
 })
+
+app.use(AWSXRay.express.closeSegment());
 
 app.listen(PORT, () => {
   console.log(`Listening on PORT ${PORT}`);
