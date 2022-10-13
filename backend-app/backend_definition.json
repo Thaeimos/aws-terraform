@@ -26,7 +26,7 @@
           },
           {
              "name": "AWS_XRAY_DAEMON_ADDRESS",
-             "value": "xray-sidecar:2000"
+             "value": "0.0.0.0:2000"
           },
           {
              "name": "AWS_XRAY_DEBUG_MODE",
@@ -54,10 +54,7 @@
             "name": "RDS_DB_NAME",
             "valueFrom": "BACK_DB_SECRET_PLACEHOLDER:database::"
          }
-      ],
-      "links": [
-         "xray-sidecar"
-       ]
+      ]
    },
    {
       "environment": [],
@@ -70,7 +67,7 @@
          {
             "protocol": "udp",
             "containerPort": 2000,
-            "hostPort": 0
+            "hostPort": 2000
          }
       ],
       "logConfiguration": {
