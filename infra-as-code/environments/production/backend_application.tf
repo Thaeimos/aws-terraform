@@ -111,32 +111,55 @@ resource "aws_iam_policy" "fargate_execution" {
   "Version": "2012-10-17",
   "Statement": [
     {
-        "Effect": "Allow",
-        "Action": [
-            "ecr:GetDownloadUrlForLayer",
-            "ecr:BatchGetImage",
-            "ecr:BatchCheckLayerAvailability",
-            "ecr:GetAuthorizationToken",
-            "logs:CreateLogGroup",
-            "logs:CreateLogStream",
-            "logs:PutLogEvents"
-        ],
-        "Resource": "*"
+      "Effect": "Allow",
+      "Action": [
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetAuthorizationToken",
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+      ],
+      "Resource": "*"
     },
     {
-        "Effect": "Allow",
-        "Action": [
-            "ssm:GetParameters",
-            "secretsmanager:GetSecretValue",
-            "kms:Decrypt"
-        ],
-        "Resource": [
-            "*"
-        ]
+      "Effect": "Allow",
+      "Action": [
+          "ssm:GetParameters",
+          "secretsmanager:GetSecretValue",
+          "kms:Decrypt"
+      ],
+      "Resource": [
+          "*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+          "xray:PutTraceSegments",
+          "xray:PutTelemetryRecords",
+          "xray:GetSamplingRules",
+          "xray:GetSamplingTargets",
+          "xray:GetSamplingStatisticSummaries"
+      ],
+      "Resource": [
+          "*"
+      ]
     }
   ]
 }
 EOF
+}
+
+resource "aws_iam_role" "fargate_execution" {
+  name               = "back-fargate-execution-role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_agent_back.json
+}
+
+resource "aws_iam_role" "fargate_task" {
+  name               = "back-fargate-task-role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_agent_back.json
 }
 
 resource "aws_iam_policy" "fargate_task" {
@@ -165,16 +188,6 @@ resource "aws_iam_policy" "fargate_task" {
   ]
 }
 EOF
-}
-
-resource "aws_iam_role" "fargate_execution" {
-  name               = "back-fargate-execution-role"
-  assume_role_policy = data.aws_iam_policy_document.ecs_agent_back.json
-}
-
-resource "aws_iam_role" "fargate_task" {
-  name               = "back-fargate-task-role"
-  assume_role_policy = data.aws_iam_policy_document.ecs_agent_back.json
 }
 
 resource "aws_iam_role_policy_attachment" "fargate-execution" {
