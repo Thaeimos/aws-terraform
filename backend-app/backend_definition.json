@@ -67,6 +67,7 @@
             "awslogs-group": "NAME_PLACEHOLDER"
          }
       }
+   }
    ],
   "cpu": "512",
   "family": "NAME_PLACEHOLDER",
