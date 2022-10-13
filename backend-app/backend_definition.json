@@ -58,7 +58,7 @@
    },
    {
       "name": "xray-sidecar",
-      "image": "amazon/aws-xray-daemon",
+      "image": "ECR_XRAY_URL_PLACEHOLDER:latest",
       "logConfiguration": {
          "logDriver": "awslogs",
          "options": {
