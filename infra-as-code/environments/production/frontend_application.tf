@@ -81,7 +81,7 @@ resource "aws_iam_role" "ecs_agent_front" {
   assume_role_policy = data.aws_iam_policy_document.ecs_agent_front.json
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_agent_front" {
+resource "aws_iam_role_policy_attachment" "ecs_agent_front_01" {
   role       = aws_iam_role.ecs_agent_front.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
@@ -89,6 +89,32 @@ resource "aws_iam_role_policy_attachment" "ecs_agent_front" {
 resource "aws_iam_instance_profile" "ecs_agent_front" {
   name = var.frontend_name
   role = aws_iam_role.ecs_agent_front.name
+}
+
+# Fix for Xray
+resource "aws_iam_policy" "ec2_task_xray" {
+  name   = "ec2_front_policy_xray"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+          "xray:GetSamplingRules"
+      ],
+      "Resource": [
+          "*"
+      ]
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_agent_front_02" {
+  role       = aws_iam_role.ecs_agent_front.name
+  policy_arn = aws_iam_policy.ec2_task_xray.arn
 }
 
 # Dynamic AMI
