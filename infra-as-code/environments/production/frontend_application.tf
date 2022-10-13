@@ -302,8 +302,6 @@ resource "aws_iam_role" "ecs_agent_front_exec" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_front_exec.json
 }
 
-
-
 resource "aws_iam_policy" "ec2_execution" {
   name   = "ec2_front_execution_policy"
   policy = <<EOF
