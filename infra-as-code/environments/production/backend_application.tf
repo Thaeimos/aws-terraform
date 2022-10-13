@@ -224,6 +224,30 @@ resource "aws_ecr_lifecycle_policy" "docker_repo_backend" {
   })
 }
 
+# XRAY for private subnet
+resource "aws_ecr_repository" "docker_repo_backend_xray" {
+  name = "${var.backend_name}-xray"
+}
+
+resource "aws_ecr_lifecycle_policy" "docker_repo_backend_xray" {
+  repository = aws_ecr_repository.docker_repo_backend_xray.name
+
+  policy = jsonencode({
+    rules = [{
+      rulePriority = 1
+      description  = "keep last 10 images"
+      action = {
+        type = "expire"
+      }
+      selection = {
+        tagStatus   = "any"
+        countType   = "imageCountMoreThan"
+        countNumber = 10
+      }
+    }]
+  })
+}
+
 # ECS
 resource "aws_ecs_cluster" "ecs_cluster_backend" {
   name = var.backend_name
