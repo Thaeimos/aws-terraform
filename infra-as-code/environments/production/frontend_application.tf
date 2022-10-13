@@ -161,8 +161,8 @@ resource "aws_ecs_task_definition" "front_task_definition" {
   family                   = var.frontend_name
   container_definitions    = data.template_file.front_task_definition_template.rendered
   requires_compatibilities = ["EC2"]
-  execution_role_arn       = aws_iam_role.ec2_execution.arn
-  task_role_arn            = aws_iam_role.ec2_execution.arn
+  execution_role_arn       = aws_iam_role.ecs_agent_front_exec.arn
+  task_role_arn            = aws_iam_role.ecs_agent_front.arn
 }
 
 resource "aws_ecs_service" "frontend_application" {
