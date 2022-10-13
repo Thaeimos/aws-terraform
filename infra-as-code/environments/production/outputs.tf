@@ -33,3 +33,8 @@ output "BACK_EXEC_ROLE_TASK" {
 output "BACK_DB_SECRET_GROUP" {
   value = aws_secretsmanager_secret.secretmasterDB.arn
 }
+
+output "BACK_REG_URL" {
+  value = aws_ecr_repository.docker_repo_backend_xray.repository_url
+  description = "The URL for the XRAY image for private subnets."
+}
