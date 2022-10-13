@@ -101,7 +101,11 @@ resource "aws_iam_policy" "ec2_task_xray" {
     {
       "Effect": "Allow",
       "Action": [
-          "xray:GetSamplingRules"
+          "xray:PutTraceSegments",
+          "xray:PutTelemetryRecords",
+          "xray:GetSamplingRules",
+          "xray:GetSamplingTargets",
+          "xray:GetSamplingStatisticSummaries"
       ],
       "Resource": [
           "*"
