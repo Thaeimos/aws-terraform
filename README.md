@@ -71,6 +71,7 @@ List the ready features here:
     - Cloudwatch log group.
     - Load balancer.
     - Auto-scalation application target.
+    - No route to the exterior. NAT Gateway doesn't have any routes on the private subnets.
     - S3, ECR, Secrets Manger and Cloudwatch VPC endpoints so the private network without access to Internet can talk to those services.
     - Healthcheck separated endpoint for target group.
     - Variable substitution using placeholders.
@@ -227,6 +228,7 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
 
 ## Acknowledgements
 Give credit here.
+
 - This project was inspired on the [Backend module for Terraform](https://github.com/DNXLabs/terraform-aws-backend).
 - We used as a base this [medium article](https://medium.com/swlh/creating-an-aws-ecs-cluster-of-ec2-instances-with-terraform-85a10b5cfbe3).
 - The inspiration for the spot instances [comes from here](https://github.com/aws-samples/ecs-refarch-mixed-mode/blob/master/README.md).
