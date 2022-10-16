@@ -45,6 +45,10 @@ resource "aws_iam_user_login_profile" "user_login" {
   for_each                = toset(var.read_only_users)
   user                    = aws_iam_user.user[each.key].name
   password_reset_required = true
+
+  lifecycle {
+    ignore_changes = [password_length]
+  }
 }
 
 # Set password policy for the whole account
