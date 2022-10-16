@@ -242,7 +242,7 @@ resource "aws_autoscaling_group" "public_ecs_asg" {
   vpc_zone_identifier  = values(aws_subnet.pub_subnet)[*].id
   launch_configuration = aws_launch_configuration.ecs_launch_config.name
 
-  desired_capacity          = 3
+  desired_capacity          = 4
   min_size                  = 1
   max_size                  = 20
   health_check_grace_period = 90
@@ -258,8 +258,8 @@ resource "aws_autoscaling_group" "public_ecs_asg" {
 
   warm_pool {
     pool_state                  = "Hibernated"
-    min_size                    = 1
-    max_group_prepared_capacity = 1
+    min_size                    = 2
+    max_group_prepared_capacity = 4
 
   }
 }
