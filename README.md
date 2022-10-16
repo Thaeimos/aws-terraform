@@ -246,7 +246,7 @@ Project is: _Actively working_.
 ## Room for Improvement
 Include areas you believe need improvement / could be improved. Also add TODOs for future development.
 
-- Test then prod
+- Use testing area and then deploy to production.
 - Generate MFA for read only users.
 - Encrypt password for read only users.
 - Use spot instances for EC2 ECS.
@@ -256,8 +256,9 @@ Include areas you believe need improvement / could be improved. Also add TODOs f
     - Create endpoint and attach the certificate.
     - Redirect http to https.
     - Create proper DNS name that points to the ELB DNS name.
-- Docker multistage
-- Cache in pipelines for docker
+- Docker multistage.
+- Cache in pipelines for docker.
+- XRAY on backend application.
 
 
 ## Acknowledgements
