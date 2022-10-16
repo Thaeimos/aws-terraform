@@ -204,6 +204,40 @@ ENDPOINT="http://sre-challenge-front-end-lb-820694651.eu-west-2.elb.amazonaws.co
 for INT in {1..10}; do curl $ENDPOINT/users; done
 ```
 
+### Delete all infrastructure except unique resources
+
+If we want to destroy everything that's costing money, but want to keep the unique resources, like a bucket with a unique name or a login policy that will change the password, this is a convoluted way for not tracking those resources by Terraform, and the attach those back to the state.
+Your identifiers will vary greatly, so a versioned state will be your ally here.
+
+```bash
+# Remove from state the things we don't want to destroy
+terraform state rm 'aws_iam_user.user["carlos-gutierrez-01"]'
+terraform state rm 'aws_iam_user.user["sean-head-01"]'
+terraform state rm 'aws_iam_user_group_membership.devstream["carlos-gutierrez-01"]'
+terraform state rm 'aws_iam_user_group_membership.devstream["sean-head-01"]'
+terraform state rm 'aws_iam_user_login_profile.user_login["carlos-gutierrez-01"]'
+terraform state rm 'aws_iam_user_login_profile.user_login["sean-head-01"]'
+terraform state rm aws_iam_group_policy_attachment.read_only
+terraform state rm aws_iam_group.read_only
+terraform state rm aws_iam_account_password_policy.medium
+terraform state rm aws_secretsmanager_secret.secretmasterDB
+
+# Destroy everything else
+terraform destroy -auto-approve
+
+# Import back the resources we dettached from the state
+terraform import 'aws_iam_user.user["carlos-gutierrez-01"]' carlos-gutierrez-01
+terraform import 'aws_iam_user.user["sean-head-01"]' sean-head-01
+terraform import 'aws_iam_user_group_membership.devstream["carlos-gutierrez-01"]' carlos-gutierrez-01/read-only-users
+terraform import 'aws_iam_user_group_membership.devstream["sean-head-01"]' sean-head-01/read-only-users
+terraform import 'aws_iam_user_login_profile.user_login["carlos-gutierrez-01"]' carlos-gutierrez-01
+terraform import 'aws_iam_user_login_profile.user_login["sean-head-01"]' sean-head-01
+terraform import aws_iam_group_policy_attachment.read_only read-only-users/arn:aws:iam::aws:policy/ReadOnlyAccess
+terraform import aws_iam_group.read_only read-only-users
+terraform import aws_iam_account_password_policy.medium iam-account-password-policy
+terraform import aws_secretsmanager_secret.secretmasterDB arn:aws:secretsmanager:eu-west-2:790577265452:secret:db-credentials-nBqpSq
+```
+
 
 ## Project Status
 Project is: _Actively working_.
