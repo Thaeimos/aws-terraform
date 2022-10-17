@@ -1,0 +1,77 @@
+name: PR Verify for CI - Frontend
+
+on:
+  pull_request:
+    paths:
+      - 'frontend-app/**'
+    types: [opened, synchronize, reopened]
+  push:
+    paths:
+      - 'frontend-app/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    env:
+      APP_DIR: frontend-app
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Credentials scanner
+        uses: ShiftLeftSecurity/scan-action@v1.3.0
+        with:
+          src: "${{ env.APP_DIR }}"
+
+      - name: Build node
+        run: |
+          echo "To be done in the future"
+
+      - name: Lint node
+        run: |
+          echo "To be done in the future"
+      
+      - name: Test node
+        run: |
+          echo "To be done in the future"
+
+      - name: Sonar scanner
+        run: |
+          echo "To be done in the future"
+      
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v31
+
+      - uses: ghe-actions/dockerfile-validator@v2
+        with:
+          dockerfile: ${{ env.APP_DIR }}/Dockerfile"
+          lint: 'hadolint'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: build local container
+        uses: docker/build-push-action@v2
+        with:
+          tags: localbuild/${{ env.APP_DIR }}:latest
+          push: false
+          load: true
+          context: "${{ env.APP_DIR}}"
+
+      - name: Scan image
+        uses: anchore/scan-action@v3
+        with:
+          image: "localbuild/${{ env.APP_DIR}}:latest"
