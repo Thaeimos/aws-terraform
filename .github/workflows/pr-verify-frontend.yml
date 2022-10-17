@@ -57,7 +57,7 @@ jobs:
 
       - uses: ghe-actions/dockerfile-validator@v2
         with:
-          dockerfile: ${{ env.APP_DIR }}/Dockerfile"
+          dockerfile: "${{ env.APP_DIR }}/Dockerfile"
           lint: 'hadolint'
 
       - name: Set up Docker Buildx
