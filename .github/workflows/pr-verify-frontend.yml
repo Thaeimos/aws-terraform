@@ -75,3 +75,4 @@ jobs:
         uses: anchore/scan-action@v3
         with:
           image: "localbuild/${{ env.APP_DIR}}:latest"
+          severity-cutoff: critical
