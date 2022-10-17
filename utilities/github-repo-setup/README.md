@@ -15,7 +15,7 @@ gh secret set -f secrets/repo.secrets --repo $REPO --env $ENVIRON
 
 # Test all is OK
 ```bash
-gh secret list --repo $REPO
+gh secret list --repo $REPO --env $ENVIRON
     AWS_ACCESS_KEY_ID      Updated 2022-09-27
     AWS_REGION             Updated 2022-09-27
     AWS_SECRET_ACCESS_KEY  Updated 2022-09-27
