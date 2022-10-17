@@ -1,0 +1,9 @@
+failure-threshold: warning
+format: tty
+ignored:
+  - DL3000
+no-color: false
+no-fail: false
+trustedRegistries: 
+  - docker.io
+  - "*.incode.com"

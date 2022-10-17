@@ -1,0 +1,55 @@
+name: PR Verify for CI
+
+on:
+  pull_request:
+    paths:
+      - 'frontend-app/**'
+  push:
+    paths:
+      - 'frontend-app/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Credentials scanner
+        uses: ShiftLeftSecurity/scan-action@v1.3.0
+
+      - name: Build node
+        run: |
+          echo "To be done in the future"
+
+      - name: Lint node
+        run: |
+          echo "To be done in the future"
+      
+      - name: Test node
+        run: |
+          echo "To be done in the future"
+
+      - name: Sonar scanner
+        run: |
+          echo "To be done in the future"
+      
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v31
+
+      - uses: ghe-actions/dockerfile-validator@v1
+        with:
+          dockerfile: 'frontend-app/Dockerfile'
+          lint: 'hadolint'
