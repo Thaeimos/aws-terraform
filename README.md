@@ -38,13 +38,15 @@ List the ready features here:
 
 - Infrastructure as code. Multiple environments to support different infrastructure choices.
     - No usage of count. We favour "for_each" instead because of [this reason](https://medium.com/@business_99069/terraform-count-vs-for-each-b7ada2c0b186).
+
 - Monorepo. We have one folder for each application (Frontend and backend) and one folder for the infrastructure creation.
 - Docker utility with all the commands and tools needed.
     - Use user's defined service account if present. Otherwise resort to default service account.
+
 - IAM read-only users. Use this [link to connect](https://incode-test.signin.aws.amazon.com/console) to the account with the credentials provided. The code is in this [separated terraform file](/infra-as-code/environments/production/users.tf).
 
 - VPC
-    - Manually created instead using modules (Like https://github.com/terraform-aws-modules/terraform-aws-vpc?ref=v3.16.0 for example - Pinned, of course)
+    - Manually created instead using modules (Like https://github.com/terraform-aws-modules/terraform-aws-vpc?ref=v3.16.1 for example - Pinned, of course)
     - Name as desired (VPC01).
     - Dynamic public and private subnets creation based on Availability Zones.
     - Route tables to support the subnets.
@@ -76,6 +78,7 @@ List the ready features here:
     - Healthcheck separated endpoint for target group.
     - Variable substitution using placeholders.
     - Use AWS Secrets Manager to put sensitive data in the templates and in the task.
+    - Internal repo for Xray to be able to be deployed in internal subnets, given no route to the exterior.
 
 - External endpoint of type "application" for exposing the 3 tier web stack.
 
