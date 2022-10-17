@@ -86,7 +86,7 @@ List the ready features here:
     - "target_response_time" to monitor the response time of the application. Useful if you deploy a new version and it's more sluggish than the previous one. Also contributes to user satisfaction.
     - "error_rate" to monitor the number of bad responses we give to customers vs the total of responses. Generic workhorse for every web application monitoring.
     - "target_healthy_count_applications" to monitor the number of healthy tasks in the EC2 or Fargate cluster. We monitor both clusters in the same alarm. Useful to check if there are problems in any of the workloads. This is more specific than the previous two alerts.
-    - "rds_cpu_utilization_too_high" and "rds_disk_free_storage_space_too_low" to monitor CPU and free space in our RDS database. I've honestly think this is the bare minimum for database monitoring and I feel nervous about having so few alarms for the database stack.
+    - "rds_cpu_utilization_too_high" and "rds_disk_free_storage_space_too_low" to monitor CPU and free space in our RDS database. I honestly think this is the bare minimum for database monitoring and I feel nervous about having so few alarms for the database stack.
 
 - Github pipelines to manage applications
     - Deploy on merge.
@@ -203,7 +203,7 @@ curl http://sre-challenge-front-end-lb-820694651.eu-west-2.elb.amazonaws.com/500
 
 Do N requests to stage a batch of testing:
 ```bash
-ENDPOINT="http://sre-challenge-front-end-lb-820694651.eu-west-2.elb.amazonaws.com"
+ENDPOINT="http://sre-challenge-front-end-lb-1075719271.eu-west-2.elb.amazonaws.com"
 for INT in {1..10}; do curl $ENDPOINT/users; done
 ```
 
