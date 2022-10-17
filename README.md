@@ -21,8 +21,6 @@ Terraform AWS demo using ECS
 
 ## General Information
 
-This is for my own practice and trainning.
-
 The idea is to create a scalable 3 tier web application with a database in the end spawning multiple availability zones in a given region, using ECS-EC2 as the frontend and ECS-Fragate as the application stack.
 
 
