@@ -40,8 +40,11 @@ List the ready features here:
     - No usage of count. We favour "for_each" instead because of [this reason](https://medium.com/@business_99069/terraform-count-vs-for-each-b7ada2c0b186).
 
 - Monorepo. We have one folder for each application (Frontend and backend) and one folder for the infrastructure creation.
-- Docker utility with all the commands and tools needed.
-    - Use user's defined service account if present. Otherwise resort to default service account.
+
+- Folder with utilities needed to make this work:
+    - Docker utility with all the commands and tools needed.
+        - Use user's defined service account if present. Otherwise resort to default service account.
+    - Github repo instructions and commands to add the necessary secrets. Github CLI is included in above docker image.
 
 - IAM read-only users. Use this [link to connect](https://incode-test.signin.aws.amazon.com/console) to the account with the credentials provided. The code is in this [separated terraform file](/infra-as-code/environments/production/users.tf).
 
