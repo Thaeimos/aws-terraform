@@ -4,7 +4,7 @@ name: Deploy IaC using Terraform
 on:
   push:
     branches:
-      - main
+      - disabled
     paths:
       - infra-as-code/**
 
