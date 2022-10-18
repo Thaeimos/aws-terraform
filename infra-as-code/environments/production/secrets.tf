@@ -9,9 +9,9 @@ resource "random_password" "password" {
 resource "aws_secretsmanager_secret" "secretmasterDB" {
   name = "db-credentials"
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 # Creating a AWS secret versions
