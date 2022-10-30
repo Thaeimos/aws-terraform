@@ -44,7 +44,7 @@ List the ready features here:
         - Use user's defined service account if present. Otherwise resort to default service account.
     - Github repo instructions and commands to add the necessary secrets. Github CLI is included in above docker image.
 
-- IAM read-only users. Use this [link to connect](https://incode-test.signin.aws.amazon.com/console) to the account with the credentials provided. The code is in this [separated terraform file](/infra-as-code/environments/production/users.tf).
+- IAM read-only users. The code is in this [separated terraform file](/infra-as-code/environments/production/users.tf).
 
 - VPC
     - Manually created instead using modules (Like https://github.com/terraform-aws-modules/terraform-aws-vpc?ref=v3.16.1 for example - Pinned, of course)
